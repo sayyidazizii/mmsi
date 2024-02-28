@@ -1025,3 +1025,6 @@ $route['kloter/delete-member-participate/(:num)/(:num)']           = 'AcctKloter
 $route['kloter/get-list-member/(:num)']                            = 'AcctKloter/getListCoreMember/$1';
 
 $route['commission-on-hold']                                        = 'AcctCommissionOnHold';
+
+$route['agent-deposito']                                             = 'ComisionAgent';
+
