@@ -443,6 +443,55 @@ $this->session->unset_userdata('message');
 										<td width="5%">:</td>
 										<td width="60%"><?php echo form_dropdown('deposito_member_heir_relationship', $familyrelationship, set_value('deposito_member_heir_relationship', $data['deposito_member_heir_relationship']), 'id="deposito_member_heir_relationship" class="easyui-combobox" style="width:100%"'); ?></td>
 									</tr>
+									<tr>
+										<td><hr></td>
+										<td><hr></td>
+										<td><hr></td>
+									</tr>
+									
+									<input type="hidden" class="easyui-textbox" name="deposito_account_cashback" id="deposito_account_cashback" autocomplete="off" value="<?php echo set_value('deposito_account_cashback', $data['deposito_account_cashback']); ?>" />
+									<tr>
+										<td width="35%">Tabungan Agent<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="member_agent" id="member_agent" placeholder="Nominal" value="<?php echo set_value('member_agent', $memberagent['savings_account_no']); ?>" style="width:99.8%" readonly/>
+										</td>
+									</tr>
+
+									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
+									<tr>
+										<td width="35%">Persentase (%)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_agent_view" id="deposito_account_commission_on_hold_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_agent_view', $data['deposito_account_commission_on_hold_agent_view']); ?>" style="width:99.8%" />
+										</td>
+									</tr>
+
+									<input type="hidden" class="" name="savings_account_id_agent" id="savings_account_id_agent" autocomplete="off" value="<?php echo set_value('savings_account_id_agent', $memberagent['savings_account_id']); ?>" />
+									<tr>
+										<td width="35%">Komisi Agent Cair (Rp)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_agent_view" id="deposito_account_commission_disbursed_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_agent_view', $data['deposito_account_commission_disbursed_agent_view']); ?>" style="width:99.8%" />
+										</td>
+									</tr>
+									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
+									<tr>
+										<td width="35%">Komisi Agent Ditahan (Rp)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_agent_view" id="deposito_account_commission_on_hold_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_agent_view', $data['deposito_account_commission_on_hold_agent_view']); ?>" style="width:99.8%" />
+										</td>
+									</tr>
+
+									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
+									<tr>
+										<td width="35%">Jangka Waktu (Rp)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_agent_view" id="deposito_account_commission_on_hold_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_agent_view', $data['deposito_account_commission_on_hold_agent_view']); ?>" style="width:99.8%" />
+										</td>
+									</tr>
 								</table>
 							</div>
 							<div class="col-md-1"></div>
@@ -531,29 +580,10 @@ $this->session->unset_userdata('message');
 											<input type="text" class="easyui-textbox" name="deposito_account_cashback_view" id="deposito_account_cashback_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_cashback_view', $data['deposito_account_cashback_view']); ?>" style="width:99.8%" />
 										</td>
 									</tr>
-									<input type="hidden" class="easyui-textbox" name="deposito_account_cashback" id="deposito_account_cashback" autocomplete="off" value="<?php echo set_value('deposito_account_cashback', $data['deposito_account_cashback']); ?>" />
 									<tr>
-										<td width="35%">Tabungan Agent<span class="required" style="color : red">*</span></td>
-										<td width="5%">:</td>
-										<td width="60%">
-											<input type="text" class="easyui-textbox" name="member_agent" id="member_agent" placeholder="Nominal" value="<?php echo set_value('member_agent', $memberagent['savings_account_no']); ?>" style="width:99.8%" readonly/>
-										</td>
-									</tr>
-									<input type="hidden" class="" name="savings_account_id_agent" id="savings_account_id_agent" autocomplete="off" value="<?php echo set_value('savings_account_id_agent', $memberagent['savings_account_id']); ?>" />
-									<tr>
-										<td width="35%">Komisi Agent Cair (Rp)<span class="required" style="color : red">*</span></td>
-										<td width="5%">:</td>
-										<td width="60%">
-											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_agent_view" id="deposito_account_commission_disbursed_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_agent_view', $data['deposito_account_commission_disbursed_agent_view']); ?>" style="width:99.8%" />
-										</td>
-									</tr>
-									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
-									<tr>
-										<td width="35%">Komisi Agent Ditahan (Rp)<span class="required" style="color : red">*</span></td>
-										<td width="5%">:</td>
-										<td width="60%">
-											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_agent_view" id="deposito_account_commission_on_hold_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_agent_view', $data['deposito_account_commission_on_hold_agent_view']); ?>" style="width:99.8%" />
-										</td>
+										<td><hr></td>
+										<td><hr></td>
+										<td><hr></td>
 									</tr>
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_on_hold_agent" id="deposito_account_commission_on_hold_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_on_hold_agent', $data['deposito_account_commission_on_hold_agent']); ?>" />
 									<tr>

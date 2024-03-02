@@ -1024,7 +1024,20 @@ $route['kloter/delete/(:num)']                                     = 'AcctKloter
 $route['kloter/delete-member-participate/(:num)/(:num)']           = 'AcctKloter/deleteMemberParticipate/$1/$1';
 $route['kloter/get-list-member/(:num)']                            = 'AcctKloter/getListCoreMember/$1';
 
-$route['commission-on-hold']                                        = 'AcctCommissionOnHold';
+$route['commission-on-hold']                                       = 'AcctCommissionOnHold';
 
-$route['agent-deposito']                                             = 'ComisionAgent';
+$route['commision']                                                = 'Commision';
+$route['commision/add']                                            = 'Commision/addAcctCommision';
+$route['commision/process-add']                                    = 'Commision/processAddCommision';
+$route['commision/edit/(:num)']                                    = 'Commision/editAcctCommision/$1';
+$route['commision/process-edit']                                   = 'Commision/processEditAcctCommission';
+$route['commision/elements-add']                                   = 'Commision/function_elements_add';
+$route['commision/state-add']                                      = 'Commision/function_state_add';
+$route['commision/reset-data']                                     = 'Commision/reset_data';
+$route['commision/delete/(:num)']                                  = 'Commision/deleteAcctCommision/$1';
+
+
+
+
+
 
