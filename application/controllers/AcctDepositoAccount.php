@@ -8,6 +8,7 @@ class AcctDepositoAccount extends CI_Controller{
 		$this->load->model('AcctDepositoAccount_model');
 		$this->load->model('CoreMember_model');
 		$this->load->model('CoreOffice_model');
+		$this->load->model('CoreCommision_model');
 		$this->load->model('Library_model');
 		$this->load->model('AcctSavingsAccount_model');
 		$this->load->model('AcctSavingsTransferMutation_model');
@@ -339,6 +340,8 @@ class AcctDepositoAccount extends CI_Controller{
 		$data['main_view']['acctdeposito']				= create_double($this->AcctDepositoAccount_model->getAcctDeposito(), 'deposito_id', 'deposito_name');
 		$data['main_view']['depositoextratype']			= create_double($depositoextratype, 'deposito_account_extra_type', 'deposito_account_extra_type_name');
 		$data['main_view']['coreoffice']				= create_double($this->AcctDepositoAccount_model->getCoreOffice(), 'office_id', 'office_name', 'savings_account_id');
+		$data['main_view']['commisionagent']			= create_double($this->CoreCommision_model->getDataCommisionAgent() ,'core_commision_id', 'commision_name');
+		$data['main_view']['commisionspv']				= create_double($this->CoreCommision_model->getDataCommisionSpv() ,'core_commision_id', 'commision_name');
 		$data['main_view']['acctsavingsaccount']		= $this->AcctDepositoAccount_model->getAcctSavingsAccount_Detail($savings_account_id);
 		$data['main_view']['memberagent']				= $savings_account_agent;
 		$data['main_view']['membersupervisor']			= $savings_account_supervisor;

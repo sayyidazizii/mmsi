@@ -458,6 +458,12 @@ $this->session->unset_userdata('message');
 										</td>
 									</tr>
 
+									<tr>
+										<td width="35%">Komisi Agent<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%"><?php echo form_dropdown('core_commision_id', $commisionagent, set_value('core_commision_id', $data['core_commision_id']), 'id="core_commision_id" class="easyui-combobox" style="width:100%" '); ?></td>
+									</tr>
+
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
 									<tr>
 										<td width="35%">Persentase (%)<span class="required" style="color : red">*</span></td>
@@ -593,6 +599,18 @@ $this->session->unset_userdata('message');
 											<input type="text" class="easyui-textbox" name="member_supervisor" id="member_supervisor" placeholder="Nominal" value="<?php echo set_value('member_supervisor', $membersupervisor['savings_account_no']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
+									<tr>
+										<td width="35%">Komisi Supervisor<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%"><?php echo form_dropdown('core_commision_id', $commisionspv, set_value('core_commision_id', $data['core_commision_id']), 'id="core_commision_id" class="easyui-combobox" style="width:100%" '); ?></td>
+									</tr>
+									<tr>
+										<td width="35%">Presentase (%)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="member_supervisor" id="member_supervisor" placeholder="Nominal" value="<?php echo set_value('member_supervisor', $membersupervisor['savings_account_no']); ?>" style="width:99.8%"/>
+										</td>
+									</tr>
 									<input type="hidden" class="" name="savings_account_id_supervisor" id="savings_account_id_supervisor" autocomplete="off" value="<?php echo set_value('savings_account_id_supervisor', $membersupervisor['savings_account_id']); ?>" />
 									<tr>
 										<td width="35%">Komisi Supervisor Cair (Rp)<span class="required" style="color : red">*</span></td>
@@ -609,6 +627,16 @@ $this->session->unset_userdata('message');
 											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_supervisor_view" id="deposito_account_commission_on_hold_supervisor_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_supervisor_view', $data['deposito_account_commission_on_hold_supervisor_view']); ?>" style="width:99.8%" />
 										</td>
 									</tr>
+
+									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
+									<tr>
+										<td width="35%">Jangka Waktu (Rp)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_agent_view" id="deposito_account_commission_on_hold_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_agent_view', $data['deposito_account_commission_on_hold_agent_view']); ?>" style="width:99.8%" />
+										</td>
+									</tr>
+
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_on_hold_supervisor" id="deposito_account_commission_on_hold_supervisor" autocomplete="off" value="<?php echo set_value('deposito_account_commission_on_hold_supervisor', $data['deposito_account_commission_on_hold_supervisor']); ?>" />
 									<tr>
 										<td width="35%">Buffer (Rp)<span class="required" style="color : red">*</span></td>

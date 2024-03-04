@@ -22,6 +22,25 @@
 			return $result;
 		}
 
+		//type agent
+		public function getDataCommisionAgent(){
+			$this->db->select('*');
+			$this->db->from('core_commision');
+			$this->db->where('commision_type', 1);
+			$this->db->where('data_state', 0);
+			$result = $this->db->get()->result_array();
+			return $result;
+		}
+		//type spv
+		public function getDataCommisionSpv(){
+			$this->db->select('*');
+			$this->db->from('core_commision');
+			$this->db->where('commision_type', 2);
+			$this->db->where('data_state', 0);
+			$result = $this->db->get()->result_array();
+			return $result;
+		}
+
 		public function getAcctAccount(){
 			$hasil = $this->db->query("
 							SELECT acct_account.account_id, 
