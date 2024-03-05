@@ -117,7 +117,7 @@ $this->session->unset_userdata('message');
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="core_commision_id" id="core_commision_id" autocomplete="off" value="<?php echo set_value('core_commision_id', $acctcommision['core_commision_id']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<input type="hidden" class="form-control" name="core_commision_id" id="core_commision_id" autocomplete="off" value="<?php echo set_value('core_commision_id', $acctcommision['core_commision_id']); ?>" onChange="function_elements_add(this.name, this.value);" />
 									<input type="text" class="form-control" name="commision_code" id="commision_code" autocomplete="off" value="<?php echo set_value('commision_code', $acctcommision['commision_code']); ?>" onChange="function_elements_add(this.name, this.value);" />
 									<label class="control-label">Kode Komisi<span class="required">*</span></label>
 								</div>

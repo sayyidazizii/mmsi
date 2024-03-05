@@ -349,6 +349,10 @@ $route['deposito-account/commission/(:num)']                        = 'AcctDepos
 $route['deposito-account/edit-commission/(:num)/(:num)']            = 'AcctDepositoAccount/editAcctCommission/$1/$1';
 $route['deposito-account/process-edit-commission']                  = 'AcctDepositoAccount/processEditAcctCommission';
 $route['deposito-account/process-delete-commission/(:num)/(:num)']  = 'AcctDepositoAccount/processDeleteAcctCommission/$1/$1';
+$route['deposito-account/get-percentage-commision']                 = 'AcctDepositoAccount/getpercentageCommision';
+$route['deposito-account/get-percentage-commision-spv']             = 'AcctDepositoAccount/getpercentageCommisionSpv';
+
+
 
 //ACCT SAVINGS PRINT MUTATION
 $route['savings-print-mutation/get-savings-mutation']                   = 'AcctSavingsPrintMutation/getAcctSavingsAccount';

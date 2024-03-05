@@ -3179,4 +3179,34 @@ class AcctDepositoAccount extends CI_Controller{
 			redirect('deposito-account/commission/'.$this->uri->segment(3));
 		}
 	}
+
+	public function getpercentageCommision()
+	{
+		// $core_commision_id 	= 1;
+
+		$core_commision_id 	= $this->input->post('core_commision_agent_id');
+
+		$commision 	= $this->CoreCommision_model->getCommision_percentage($core_commision_id);
+
+		$result = array(
+			'commision'	=> $commision,
+		);
+		
+		echo json_encode($result);
+	}
+
+	public function getpercentageCommisionSpv()
+	{
+		// $core_commision_id 	= 1;
+
+		$core_commision_id 	= $this->input->post('core_commision_supervisor_id');
+
+		$commision 	= $this->CoreCommision_model->getCommision_percentage($core_commision_id);
+
+		$result = array(
+			'commision'	=> $commision,
+		);
+		
+		echo json_encode($result);
+	}
 }

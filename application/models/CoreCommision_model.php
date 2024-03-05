@@ -74,6 +74,13 @@
 			$this->db->where('core_commision_id', $core_commisison_id);
 			return $this->db->get()->row_array();
 		}
+
+		public function getCommision_percentage($core_commision_id){
+			$this->db->select('core_commision_id,commision_percentage,commision_period');
+			$this->db->from('core_commision');
+			$this->db->where('core_commision_id', $core_commision_id);
+			return $this->db->get()->row_array();
+		}
 		
 		public function updateCommision($data){
 			$this->db->where("core_commision_id",$data['core_commision_id']);
