@@ -67,7 +67,7 @@
 									<th width="15%">Nama</th>
 									<th width="10%">Jenis Komisi</th>
 									<th width="10%">Bunga komisi</th>
-									<th width="10%">Jangka Waktu (bln)</th>
+									<th hidden width="10%">Jangka Waktu (bln)</th>
 									<th width="15%">Action</th>
 								</tr>
 							</thead>
@@ -88,7 +88,7 @@
 												<td>" . $val['commision_name'] . "</td>
 												<td>" . $type . "</td>
 												<td>" . $val['commision_percentage'] . " %</td>
-												<td>" . $val['commision_period'] . "</td>
+												<td hidden>" . $val['commision_period'] . "</td>
 												<td>
 													<a href='" . $this->config->item('base_url') . 'commision/edit/' . $val['core_commision_id'] . "' class='btn default btn-xs purple'>
 														<i class='fa fa-edit'></i> Edit

@@ -146,7 +146,7 @@ $this->session->unset_userdata('message');
 									<label class="control-label">Bunga<span class="required">*</span></label>
 								</div>
 							</div>
-                            <div class="col-md-6">
+                            <div hidden class="col-md-6">
 								<div class="form-group form-md-line-input">
 									<input type="text" class="form-control" name="commision_period" id="commision_period" autocomplete="off" value="<?php echo set_value('commision_period', $data['commision_period']); ?>" onChange="function_elements_add(this.name, this.value);"/>
 									<label class="control-label">Jangka Waktu<span class="required">*</span></label>

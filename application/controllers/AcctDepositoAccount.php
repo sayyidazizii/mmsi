@@ -514,7 +514,17 @@ class AcctDepositoAccount extends CI_Controller{
 			'deposito_account_token'							=> $this->input->post('deposito_account_token', true),
 			'created_id'										=> $auth['user_id'],
 			'created_on'										=> date('Y-m-d H:i:s'),
+
+			'core_commision_agent_id'							=> $this->input->post('core_commision_agent_id', true),
+			'deposito_account_commission_agent_percentage'		=> $this->input->post('commision_agent_percentage', true),
+			'deposito_account_commission_period'				=> $this->input->post('commision_agent_period', true),
+			'core_commision_supervisor_id'						=> $this->input->post('core_commision_supervisor_id', true),
+			'deposito_account_commission_supervisor_percentage'	=> $this->input->post('commision_supervisor_percentage', true),
+
 		);
+
+		// echo json_encode($data);
+		// exit;
 
 		$this->form_validation->set_rules('member_id', 'Anggota', 'required');
 		$this->form_validation->set_rules('deposito_id', 'Jenis Simpanan berjangka', 'required');
@@ -833,7 +843,15 @@ class AcctDepositoAccount extends CI_Controller{
 				}
 			}
 			if ($acctdepositoaccount['deposito_account_interest_period'] == 2) {
-				for ($i = 1; $i <= $acctdepositoaccount['deposito_account_period']; $i++) {
+				//custom by jangka waktu
+				$period_commisison = 0;
+				if(!empty($acctdepositoaccount['deposito_account_commission_period'])){
+					$period_commisison = $acctdepositoaccount['deposito_account_commission_period'];
+				}else{
+					$period_commisison = $acctdepositoaccount['deposito_account_period'];
+				}
+
+				for ($i = 1; $i <= $period_commisison ; $i++) {
 					// $date = date("Y-m-d", strtotime(" +1 month", strtotime($date)));
 					// $date 	= $this->endCycle($date, 1);
 					$month = $month + 1;
