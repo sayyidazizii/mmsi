@@ -769,7 +769,7 @@ class AcctDepositoAccount extends CI_Controller{
 
 		if ($this->AcctDepositoAccount_model->validationAcctDepositoAccount($data)) {
 			$day 	= date('d', strtotime($acctdepositoaccount['deposito_account_date']));
-			$month 	= date('m', strtotime($acctdepositoaccount['deposito_account_date']));
+			$month 	= date('m', strtotime($acctdepositoaccount['deposito_account_date'])) - 1;
 			$year 	= date('Y', strtotime($acctdepositoaccount['deposito_account_date']));
 			$date 	= date('Y-m-d', strtotime($acctdepositoaccount['deposito_account_date']));
 
@@ -881,7 +881,8 @@ class AcctDepositoAccount extends CI_Controller{
 						'commission_on_hold_agent'					=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'],
 						'commission_disbursed_agent' 				=> $acctdepositoaccount['deposito_account_commission_disbursed_agent'],
 						'commission_on_hold_supervisor'				=> $acctdepositoaccount['deposito_account_commission_on_hold_supervisor'],
-						'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'],
+						// 'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'], //update 
+						'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_disbursed_supervisor'],  
 						'created_id'								=> $auth['user_id'],
 						'created_on'								=> date('Y-m-d H:i:s'),
 					);
@@ -1005,7 +1006,7 @@ class AcctDepositoAccount extends CI_Controller{
 				'journal_voucher_id'			=> $journal_voucher_id,
 				'account_id'					=> $account_id,
 				'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
-				'journal_voucher_amount'		=> ABS($acctdepositoaccount['deposito_account_amount']),
+				'journal_voucher_amount'		=> ABS($acctdepositoaccount['deposito_account_cashback']),//update
 				'journal_voucher_debit_amount'	=> ABS($journal_voucher_debit_amount),
 				'account_id_default_status'		=> $account_id_default_status,
 				'account_id_status'				=> 0,
@@ -1030,6 +1031,236 @@ class AcctDepositoAccount extends CI_Controller{
 				'created_on' 	=> date('Y-m-d'),
 			);
 			$this->AcctDepositoAccount_model->insertSystemPoint($data_point);
+
+//-----------------------------------------------update komisi pertama
+
+		// $auth = $this->session->userdata('auth');
+		// $deposito_account_id = $this->uri->segment(3);
+		$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
+		$acctcommission = $this->AcctDepositoAccount_model->getAcctCommissionFirst($deposito_account_id);
+
+		// $firstValue = null;
+		// foreach ($acctcommission as $key => $val) {
+		// 	// if($val['commission_disbursed_status'] == 0){
+		// 		if (is_null($firstValue)) {
+        // 		$firstValue = $val;
+
+				
+					$journal_voucher_id 		= $this->AcctDepositoAccount_model->getJournalVoucherID($acctcommission['created_id']);
+					$transaction_module_code 	= "DEP";
+					$transaction_module_id 		= $this->AcctDepositoAccount_model->getTransactionModuleID($transaction_module_code);
+					$journal_voucher_period 	= date("Ym", strtotime($acctcommission['deposito_account_date']));
+					$token 	= md5(rand());
+
+					$data_journal = array(
+						'branch_id'						=> $acctcommission['branch_id'],
+						'journal_voucher_period' 		=> $journal_voucher_period,
+						'journal_voucher_date'			=> date('Y-m-d'),
+						'journal_voucher_title'			=> 'PEMBAGIAN KOMISI ' . $acctcommission['member_name'],
+						'journal_voucher_description'	=> 'PEMBAGIAN KOMISI ' . $acctcommission['member_name'],
+						'journal_voucher_token'			=> $token.'kms',
+						'transaction_module_id'			=> $transaction_module_id,
+						'transaction_module_code'		=> $transaction_module_code,
+						'transaction_journal_id' 		=> $acctcommission['deposito_account_id'],
+						'transaction_journal_no' 		=> $acctcommission['deposito_account_no'],
+						'created_id' 					=> $acctcommission['created_id'],
+						'created_on' 					=> date('Y-m-d H:i:s'),
+					);
+
+				$account_id = $preferencecompany['account_commission_id'];
+				$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+				$commission_agent = $acctcommission['commission_on_hold_agent'] + $acctcommission['commission_disbursed_agent'];
+				$commission_supervisor = $acctcommission['commission_on_hold_supervisor'] + $acctcommission['commission_disbursed_supervisor'];
+				$total_commision_amount = 0;
+				
+				if($acctcommission['savings_account_id_agent']){
+					$total_commision_amount += $commission_agent;
+				}
+
+				if($acctcommission['savings_account_id_supervisor']){
+					$total_commision_amount += $commission_supervisor;
+				}
+
+				$data_debit = array(
+					'journal_voucher_id'			=> $journal_voucher_id,
+					'account_id'					=> $account_id,
+					'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
+					'journal_voucher_amount'		=> ABS($total_commision_amount),
+					'journal_voucher_debit_amount'	=> ABS($total_commision_amount),
+					'account_id_default_status'		=> $account_id_default_status,
+					'account_id_status'				=> 0,
+					'journal_voucher_item_token'	=> $token . $account_id,
+					'created_id' 					=> 37,
+				);
+
+				$journal_voucher_item_token = $this->AcctDepositoAccount_model->getJournalVoucherItemToken($data_debit['journal_voucher_item_token']);
+
+				if ($journal_voucher_item_token->num_rows() == 0) {
+					$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debit);
+				}
+				
+				if($acctcommission['savings_account_id_agent']){
+
+					$data_agent = $this->AcctDepositoAccount_model->getAcctSavingsAccountLastBalance($acctcommission['savings_account_id_agent']);
+
+					// $savings_account_last_balance_agent = implode(" ",$data_last_balance_agent);
+
+					$data_savings_account_agent = array(
+						'savings_id'						=> $data_agent['savings_id'],
+						'savings_account_id'				=> $data_agent['savings_account_id'],
+						'member_id'							=> $data_agent ['member_id'],
+						'office_id'                         => $data_agent['office_id'],
+						'savings_account_last_balance'		=> $data_agent['savings_account_last_balance'],
+					);
+
+					$data_commission_agent = array(
+						'branch_id'							=> $acctcommission['branch_id'],
+						'savings_transfer_mutation_date'	=> date('Y-m-d'),
+						'savings_transfer_mutation_amount'	=> $acctcommission['commission_on_hold_agent'] + $acctcommission['commission_disbursed_agent'],
+						'operated_name'						=> 'SYS',
+						'created_id'						=> $acctcommission['created_id'],
+						'created_on'						=> date('Y-m-d H:i:s'),
+					);
+
+					if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_commission_agent)) {
+						$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_commission_agent['created_on']);
+						
+						$data_transfer_commission_agent = array(
+							'savings_transfer_mutation_id'				=> $savings_transfer_mutation_id,
+							'savings_account_id'						=> $data_savings_account_agent['savings_account_id'],
+							'savings_id'								=> $data_savings_account_agent['savings_id'],
+							'member_id'									=> $data_savings_account_agent['member_id'],
+							'branch_id'									=> $acctcommission['branch_id'],
+							'mutation_id'								=> $preferencecompany['deposito_basil_id'],
+							'savings_transfer_mutation_to_amount'		=> $data_commission_agent['savings_transfer_mutation_amount'],
+							'savings_account_last_balance'				=> $data_savings_account_agent['savings_account_last_balance'],
+						);
+
+						if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutationTo($data_transfer_commission_agent)) {
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
+
+							$account_id = $data_agent['account_id'];
+
+							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+
+							// $journal_voucher_credit_amount = $commissiononhold['commission_on_hold_amount'];
+							$data_credit_agent = array(
+								'journal_voucher_id'			=> $journal_voucher_id,
+								'account_id'					=> $account_id,
+								'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
+								'journal_voucher_amount'		=> ABS($data_transfer_commission_agent['savings_transfer_mutation_to_amount']),
+								'journal_voucher_credit_amount'	=> ABS($data_transfer_commission_agent['savings_transfer_mutation_to_amount']),
+								'account_id_default_status'		=> $account_id_default_status,
+								'account_id_status'				=> 1,
+								'journal_voucher_item_token'	=> $token . $account_id . 'agent',
+								'created_id' 					=> $acctcommission['created_id'],
+							);
+							
+							$data= array(
+								'savings_account_id' 				=> $data_agent['savings_account_id'],
+								'savings_account_blockir_amount'	=> $acctcommission['commission_on_hold_agent'],
+								'savings_account_blockir_status'	=> 1,
+							);
+							$this->AcctDepositoAccount_model->updateAcctSavingsAccount($data);
+
+							$journal_voucher_item_token = $this->AcctDepositoAccount_model->getJournalVoucherItemToken($data_credit_agent['journal_voucher_item_token']);
+
+							if ($journal_voucher_item_token->num_rows() == 0) {
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit_agent);
+							}
+						}
+					}
+				}
+
+				if($acctcommission['savings_account_id_supervisor']){
+
+					$data_supervisor	 = $this->AcctDepositoAccount_model->getAcctSavingsAccountLastBalance($acctcommission['savings_account_id_supervisor']);
+					
+					// $savings_account_last_balance_supervisor= implode(" ",$data_last_balance_supervisor);
+					$data_savings_account_supervisor = array(
+						'savings_id'						=> $data_supervisor['savings_id'],
+						'savings_account_id'				=> $data_supervisor['savings_account_id'],
+						'member_id'							=> $data_supervisor['member_id'],
+						'office_id'                         => $data_supervisor['office_id'],
+						'savings_account_last_balance'		=> $data_supervisor['savings_account_last_balance'],
+					);
+
+					$data_commission_supervisor = array(
+						'branch_id'							=> $acctcommission['branch_id'],
+						'savings_transfer_mutation_date'	=> date('Y-m-d'),
+						'savings_transfer_mutation_amount'	=> $acctcommission['commission_on_hold_supervisor'] + $acctcommission['commission_disbursed_supervisor'],
+						'operated_name'						=> 'SYS',
+						'created_id'						=> $acctcommission['created_id'],
+						'created_on'						=> date('Y-m-d H:i:s'),
+					);
+
+					if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_commission_supervisor)) {
+						$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_commission_supervisor['created_on']);
+
+						$data_transfer_commission_supervisor= array(
+							'savings_transfer_mutation_id'				=> $savings_transfer_mutation_id,
+							'savings_account_id'						=> $data_savings_account_supervisor['savings_account_id'],
+							'savings_id'								=> $data_savings_account_supervisor['savings_id'],
+							'member_id'									=> $data_savings_account_supervisor['member_id'],
+							'branch_id'									=> $acctcommission['branch_id'],
+							'mutation_id'								=> $preferencecompany['deposito_basil_id'],
+							'savings_transfer_mutation_to_amount'		=> $data_commission_supervisor['savings_transfer_mutation_amount'],
+							'savings_account_last_balance'				=> $data_savings_account_supervisor['savings_account_last_balance'],
+						);
+
+						if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutationTo($data_transfer_commission_supervisor)) {
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
+
+							$account_id = $data_supervisor['account_id'];
+
+							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+
+							// $journal_voucher_credit_amount = $commissiononhold['commission_on_hold_amount'];
+							$data_credit_supervisor = array(
+								'journal_voucher_id'			=> $journal_voucher_id,
+								'account_id'					=> $account_id,
+								'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
+								'journal_voucher_amount'		=> ABS($data_transfer_commission_supervisor['savings_transfer_mutation_to_amount']),
+								'journal_voucher_credit_amount'	=> ABS($data_transfer_commission_supervisor['savings_transfer_mutation_to_amount']),
+								'account_id_default_status'		=> $account_id_default_status,
+								'account_id_status'				=> 1,
+								'journal_voucher_item_token'	=> $token . $account_id . 'spv',
+								'created_id' 					=> $acctcommission['created_id'],
+							);
+										
+							$data= array(
+								'savings_account_id' 				=> $data_supervisor['savings_account_id'],
+								'savings_account_blockir_amount'	=> $data_supervisor['savings_account_blockir_amount'] + $acctcommission['commission_on_hold_supervisor'],
+								'savings_account_blockir_status'	=> 1,
+							);
+							$this->AcctDepositoAccount_model->updateAcctSavingsAccount($data);
+
+							$journal_voucher_item_token = $this->AcctDepositoAccount_model->getJournalVoucherItemToken($data_credit_supervisor['journal_voucher_item_token']);
+
+							if ($journal_voucher_item_token->num_rows() == 0) {
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit_supervisor);
+							}
+						}
+					}
+				}
+
+				$data_commission = array(
+					'commission_id' 				=> $acctcommission['commission_id'],
+					'commission_disbursed_status'	=> 1,
+				);
+				$this->AcctDepositoAccount_model->updateAcctCommission($data_commission);
+			// }
+			// }
+		// }
+
+//-----------------------------------------------end update komisi pertama
+
+	
+
+
+
+
+
 
 			$msg = "<div class='alert alert-success alert-dismissable'>  
 				<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>

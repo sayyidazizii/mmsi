@@ -509,6 +509,21 @@ class AcctDepositoAccount_model extends CI_Model
 		return $this->db->get()->result_array();  
 	}
 
+	public function getAcctCommissionFirst($deposito_account_id){
+		$this->db->select('*');
+		$this->db->from('acct_commission');
+		$this->db->join('acct_deposito_account', 'acct_deposito_account.deposito_account_id = acct_commission.deposito_account_id');
+		$this->db->join('acct_savings_account', 'acct_savings_account.savings_account_id = acct_commission.savings_account_id');
+		$this->db->where('acct_deposito_account.data_state', 0);
+		$this->db->where('acct_savings_account.data_state', 0);
+		$this->db->where('acct_commission.data_state', 0);
+		$this->db->where('acct_commission.deposito_account_id', $deposito_account_id);
+		// $date_now = date('Y-m-d');
+		// $this->db->where('commission_date', $date_now);
+		$result = $this->db->get()->row_array();
+		return $result; 
+	}
+
 	public function getAcctCommissionUpdate(){
 		$this->db->select('*');
 		$this->db->from('acct_commission');

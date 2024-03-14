@@ -18,6 +18,11 @@
 	var loop = 1;
 
 	$(document).ready(function() {
+
+		$('#commision_agent_percentage').textbox('setValue', 0);
+		$('#commision_supervisor_percentage').textbox('setValue', 0);
+		
+
 		$('#deposito_member_heir').textbox({
 			collapsible: false,
 			minimizable: false,
