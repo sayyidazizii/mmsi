@@ -69,6 +69,14 @@
 			return $result['username'];
 		}
 
-	
+		public function getMemberName($savings_account_id){
+			$this->db->select('acct_savings_account.savings_account_id, CONCAT(acct_savings_account.savings_account_no," - ",core_member.member_name) AS member');
+			$this->db->from('acct_savings_account');
+			$this->db->join('core_member', 'acct_savings_account.member_id = core_member.member_id');
+			$this->db->where('acct_savings_account.data_state', 0);
+			$this->db->where('acct_savings_account.savings_account_id', $savings_account_id);
+			$result = $this->db->get()->row_array();
+			return $result['member'];
+		}
 	}
 ?>

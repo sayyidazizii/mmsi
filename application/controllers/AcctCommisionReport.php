@@ -59,6 +59,9 @@
 			$acctcommision 	= $this->Commision_Report_model->getAcctCommission($sesi['deposito_account_id'], $sesi['start_date'], $sesi['end_date'], $branch_id);						
 
 			// echo json_encode($acctcommision);
+			// $membername = $this->Commision_Report_model->getMemberName(52);
+			// echo json_encode($membername);
+
 			// exit;
 
 
@@ -143,7 +146,7 @@
 					        <td colspan=\"2\"><div style=\"text-align: left;font-size:10; font-weight:bold\">".$preferencecompany['company_name']."</div></td>
 					    </tr>
 					    <tr>
-					        <td><div style=\"text-align: left;font-size:10; font-weight:bold\">DAFTAR KOMISI SIMPANAN BERJANGKA : ".$this->AcctSavingsAccountOfficerReport_model->getOfficeName($sesi['office_id'])."</div></td>
+					        <td><div style=\"text-align: left;font-size:10; font-weight:bold\">DAFTAR KOMISI SIMPANAN BERJANGKA</div></td>
 					        <td><div style=\"text-align: left;font-size:10; font-weight:bold\">Mulai Tgl. ".tgltoview($sesi['start_date'])." S.D ".tgltoview($sesi['end_date'])."</div></td>			       
 					    </tr>						
 					</table>";
@@ -166,60 +169,42 @@
 					</table>";
 
 					$tbl2 = "<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">";
-					foreach ($acctsavings as $kSavings => $vSavings) {
-						$acctsavingsaccount 	= $this->AcctSavingsAccountOfficerReport_model->getAcctSavingsAccount($sesi['office_id'], $sesi['start_date'], $sesi['end_date'], $vSavings['savings_id'], $branch_id);						
-						if(!empty($acctsavingsaccount)){
-							$tbl3 .= "
-								<br>
-								<tr>
-									<td colspan =\"6\" style=\"border-bottom: 1px solid black;\"><div style=\"font-size:10\">".$vSavings['savings_name']."</div></td>
-								</tr>
-							";
-
-							$no = 1;
-							$totalbasil =0;
-							$totalsaldo =0;
-							foreach ($acctsavingsaccount as $key => $val) {
-								$savings_profit_sharing = $this->AcctSavingsAccountOfficerReport_model->getSavingsProfitSharing($val['savings_account_id'], $sesi['start_date'], $sesi['end_date'], $sesi['branch_id']);
+					$no = 1;
+					foreach ($acctcommision as $val) {
+						$status = '';
+								if($val['commission_disbursed_status'] == 1){
+									$status = 'Dicairkan';
+								}else{
+									$status = 'Belum Cair';
+								}
 								
 								$tbl3 .= "
 									<tr>
-								    	<td width=\"5%\"><div style=\"text-align: left;\">".$no."</div></td>
-								        <td width=\"12%\"><div style=\"text-align: left;\">".$val['savings_account_no']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$val['member_name']."</div></td>
-								        <td width=\"25%\"><div style=\"text-align: left;\">".$val['member_address']."</div></td>
-								        <td width=\"17%\"><div style=\"text-align: right;\">".number_format($savings_profit_sharing, 2)."</div></td>
-								        <td width=\"17%\"><div style=\"text-align: right;\">".number_format($val['savings_account_last_balance'], 2)."</div></td>
+								    	<td width=\"5%\"><div style=\"text-align: center;\">".$no."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['deposito_account_no']."</div></td>
+								        <td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
+								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_agent']."</div></td>
+								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$status."</div></td>
 								    </tr>
 								";
 								$no++;
 
-								$totalbasil += $savings_profit_sharing;
-								$totalsaldo += $val['savings_account_last_balance'];
-							}
-
-							$tbl3 .= "	
-								<tr>
-									<td colspan =\"3\" style=\"border-top: 1px solid black;\"></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;font-weight:bold;text-align:center\">Subtotal </div></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($totalbasil, 2)."</div></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($totalsaldo, 2)."</div></td>
-								</tr>";
-
-							$grandtotalbasil += $totalbasil;
-							$grandtotalsaldo += $totalsaldo;
-						}else{
-							$tbl3 ="";
-						}
+								$totalagent += $val['commission_disbursed_agent'];
+								$totalsupervisor += $val['commission_disbursed_supervisor'];
+					
 					}
 
 					$tbl4 = "	
-					<br>
 						<tr>
-							<td colspan =\"3\" style=\"border-top: 1px solid black;\"><div style=\"font-size:9;text-align:left;font-style:italic\">Printed : ".date('d-m-Y H:i:s')."  ".$this->AcctSavingsAccountOfficerReport_model->getUserName($auth['user_id'])."</div></td>
+							<td colspan =\"3\" style=\"border-top: 1px solid black;\"><div style=\"font-size:9;text-align:left;font-style:italic\">Printed : ".date('d-m-Y H:i:s')."  ".$this->Commision_Report_model->getUserName($auth['user_id'])."</div></td>
 							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;font-weight:bold;text-align:center\">Total </div></td>
-							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($grandtotalbasil, 2)."</div></td>
-							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($grandtotalsaldo, 2)."</div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalagent, 2)."</div></td>
+							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalsupervisor, 2)."</div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
 						</tr>						
 					</table>";
 
@@ -256,56 +241,42 @@
 
 					$tbl2 = "<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">";
 
-					foreach ($acctsavings as $kSavings => $vSavings) {
-						$acctsavingsaccount 	= $this->AcctSavingsAccountOfficerReport_model->getAcctSavingsAccount($sesi['office_id'], $sesi['start_date'], $sesi['end_date'], $vSavings['savings_id'], $branch_id);
-						if(!empty($acctsavingsaccount)){
-							$tbl3 .= "
-								<br>
-								<tr>
-									<td colspan =\"6\" style=\"border-bottom: 1px solid black;\"><div style=\"font-size:10\">".$vSavings['savings_name']."</div></td>
-								</tr>
-							";
-
 							$no = 1;
-							foreach ($acctsavingsaccount as $key => $val) {
-								$savings_profit_sharing = $this->AcctSavingsAccountOfficerReport_model->getSavingsProfitSharing($val['savings_account_id'], $sesi['start_date'], $sesi['end_date'], $sesi['branch_id']);
+							foreach ($acctcommision as $val) {
+								$status = '';
+								if($val['commission_disbursed_status'] == 1){
+									$status = 'Dicairkan';
+								}else{
+									$status = 'Belum Cair';
+								}
 								
 								$tbl3 .= "
 									<tr>
-								    	<td width=\"5%\"><div style=\"text-align: left;\">".$no."</div></td>
-								        <td width=\"12%\"><div style=\"text-align: left;\">".$val['savings_account_no']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$val['member_name']."</div></td>
-								        <td width=\"8%\"><div style=\"text-align: left;\">".$this->AcctSavingsAccountOfficerReport_model->getOfficeCode($val['office_id'])."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$val['member_address']."</div></td>
-								        <td width=\"17%\"><div style=\"text-align: right;\">".number_format($savings_profit_sharing, 2)."</div></td>
-								        <td width=\"17%\"><div style=\"text-align: right;\">".number_format($val['savings_account_last_balance'], 2)."</div></td>
+								    	<td width=\"5%\"><div style=\"text-align: center;\">".$no."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['deposito_account_no']."</div></td>
+								        <td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
+								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_agent']."</div></td>
+								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$status."</div></td>
 								    </tr>
 								";
 								$no++;
 
-								$totalbasil += $savings_profit_sharing;
-								$totalsaldo += $val['savings_account_last_balance'];
-							}
-
-							$tbl3 .= "	
-								<tr>
-									<td colspan =\"4\" style=\"border-top: 1px solid black;\"></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;font-weight:bold;text-align:center\">Subtotal </div></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($totalbasil, 2)."</div></td>
-									<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($totalsaldo, 2)."</div></td>
-								</tr>";
-
-							$grandtotalbasil += $totalbasil;
-							$grandtotalsaldo += $totalsaldo;
-						}
+								$totalagent += $val['commission_disbursed_agent'];
+								$totalsupervisor += $val['commission_disbursed_supervisor'];
+					
 					}
 
 					$tbl4 = "	
 						<tr>
-							<td colspan =\"4\" style=\"border-top: 1px solid black;\"><div style=\"font-size:9;text-align:left;font-style:italic\">Printed : ".date('d-m-Y H:i:s')."  ".$this->Commision_Report_model->getUserName($auth['user_id'])."</div></td>
+							<td colspan =\"3\" style=\"border-top: 1px solid black;\"><div style=\"font-size:9;text-align:left;font-style:italic\">Printed : ".date('d-m-Y H:i:s')."  ".$this->Commision_Report_model->getUserName($auth['user_id'])."</div></td>
 							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;font-weight:bold;text-align:center\">Total </div></td>
-							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($grandtotalbasil, 2)."</div></td>
-							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:right\">".number_format($grandtotalsaldo, 2)."</div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalagent, 2)."</div></td>
+							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalsupervisor, 2)."</div></td>
+							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
 						</tr>						
 					</table>";
 
