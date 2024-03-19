@@ -1033,20 +1033,13 @@ class AcctDepositoAccount extends CI_Controller{
 			$this->AcctDepositoAccount_model->insertSystemPoint($data_point);
 
 //-----------------------------------------------update komisi pertama
-
-		// $auth = $this->session->userdata('auth');
-		// $deposito_account_id = $this->uri->segment(3);
 		$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
 		$acctcommission = $this->AcctDepositoAccount_model->getAcctCommissionFirst($deposito_account_id);
-
-		// echo json_encode($acctcommission);
-		// exit;
 		// $firstValue = null;
 		// foreach ($acctcommission as $key => $val) {
 		// 	// if($val['commission_disbursed_status'] == 0){
 		// 		if (is_null($firstValue)) {
         // 		$firstValue = $val;
-
 				
 					$journal_voucher_id 		= $this->AcctDepositoAccount_model->getJournalVoucherID($acctcommission['created_id']);
 					$transaction_module_code 	= "DEP";
@@ -1278,14 +1271,6 @@ class AcctDepositoAccount extends CI_Controller{
 		// }
 
 //-----------------------------------------------end update komisi pertama
-
-	
-
-
-
-
-
-
 			$msg = "<div class='alert alert-success alert-dismissable'>  
 				<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>
 					Persetujuan Rekening Simpanan Berjangka Sukses

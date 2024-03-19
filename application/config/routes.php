@@ -1030,6 +1030,7 @@ $route['kloter/get-list-member/(:num)']                            = 'AcctKloter
 
 $route['commission-on-hold']                                       = 'AcctCommissionOnHold';
 
+//core commision
 $route['commision']                                                = 'Commision';
 $route['commision/add']                                            = 'Commision/addAcctCommision';
 $route['commision/process-add']                                    = 'Commision/processAddCommision';
@@ -1040,6 +1041,10 @@ $route['commision/state-add']                                      = 'Commision/
 $route['commision/reset-data']                                     = 'Commision/reset_data';
 $route['commision/delete/(:num)']                                  = 'Commision/deleteAcctCommision/$1';
 
+
+//commision report
+$route['commision-report']                                         = 'AcctCommisionReport';
+$route['commision-report/viewreport']                              = 'AcctCommisionReport/viewreport';
 
 
 
