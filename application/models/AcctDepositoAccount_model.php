@@ -510,7 +510,18 @@ class AcctDepositoAccount_model extends CI_Model
 	}
 
 	public function getAcctCommissionFirst($deposito_account_id){
-		$this->db->select('*');
+		$this->db->select('acct_commission.*, acct_deposito_account.*, 
+		acct_savings_account.savings_id, acct_savings_account.method_id,
+		acct_savings_account.bank_account_id, acct_savings_account.savings_account_no,
+		acct_savings_account.savings_account_date, acct_savings_account.savings_account_first_deposit_amount,
+		acct_savings_account.savings_account_opening_balance, acct_savings_account.savings_account_last_balance,
+		acct_savings_account.savings_account_last_balance_backup, acct_savings_account.savings_account_daily_average_balance,
+		acct_savings_account.savings_account_adm_amount, acct_savings_account.savings_member_heir,
+		acct_savings_account.savings_member_heir_address, acct_savings_account.savings_member_heir_relationship,
+		acct_savings_account.savings_account_blockir_type, acct_savings_account.savings_account_blockir_status,
+		acct_savings_account.savings_account_blockir_amount, acct_savings_account.savings_account_last_number,
+		acct_savings_account.savings_account_last_balance_phu, acct_savings_account.savings_account_status,
+		acct_savings_account.operated_name, acct_savings_account.savings_account_token,');
 		$this->db->from('acct_commission');
 		$this->db->join('acct_deposito_account', 'acct_deposito_account.deposito_account_id = acct_commission.deposito_account_id');
 		$this->db->join('acct_savings_account', 'acct_savings_account.savings_account_id = acct_commission.savings_account_id');
