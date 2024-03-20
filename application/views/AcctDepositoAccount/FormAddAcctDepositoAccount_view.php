@@ -596,7 +596,7 @@ $this->session->unset_userdata('message');
 									</tr>
 
 									<tr>
-										<td width="35%">Komisi Agent<span class="required" style="color : red">*</span></td>
+										<td width="35%">Komisi Agent</td>
 										<td width="5%">:</td>
 										<td width="60%"><?php echo form_dropdown('core_commision_agent_id', $commisionagent, set_value('core_commision_agent_id', $data['core_commision_agent_id']), 'id="core_commision_agent_id" class="easyui-combobox" style="width:100%" '); ?></td>
 									</tr>
@@ -735,7 +735,7 @@ $this->session->unset_userdata('message');
 										</td>
 									</tr>
 									<tr>
-										<td width="35%">Komisi Supervisor<span class="required" style="color : red">*</span></td>
+										<td width="35%">Komisi Supervisor</td>
 										<td width="5%">:</td>
 										<td width="60%"><?php echo form_dropdown('core_commision_supervisor_id', $commisionspv, set_value('core_commision_supervisor_id', $data['core_commision_supervisor_id']), 'id="core_commision_supervisor_id" class="easyui-combobox" style="width:100%" '); ?></td>
 									</tr>

@@ -534,7 +534,7 @@ class AcctDepositoAccount extends CI_Controller{
 		$this->form_validation->set_rules('deposito_account_cashback', 'Cashback', 'required');
 		$this->form_validation->set_rules('deposito_account_commission_disbursed_agent', 'Komisi Agent Cair', 'required');
 		$this->form_validation->set_rules('deposito_account_commission_on_hold_agent', 'Komisi Agent Ditahan', 'required');
-		$this->form_validation->set_rules('deposito_account_commission_disbursed_supervisor', 'Komisi Supervisor Cair', 'required');
+		// $this->form_validation->set_rules('deposito_account_commission_disbursed_supervisor', 'Komisi Supervisor Cair', 'required');
 		$this->form_validation->set_rules('deposito_account_commission_on_hold_supervisor', 'Komisi Supervisor Ditahan', 'required');
 		$this->form_validation->set_rules('deposito_account_buffer', 'Buffer', 'required');
 
