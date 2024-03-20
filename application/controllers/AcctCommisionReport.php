@@ -154,17 +154,18 @@
 
 					$tbl1 = "
 					<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">
-					    <tr>
+						<tr>
 						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: left;font-size:10;\">No.</div></td>
 						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No. Deposito</div></td>
-						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Tanggal</div></td>
+						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Tanggal</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No.Tabungan/Agent</div></td>
-						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Agent</div></td>
+						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">persen</div></td>
+						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Agent</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No.Tabungan/Supervisor</div></td>
+						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">persen</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Supervisor</div></td>
 						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Status</div></td>
-					       
-					    </tr>				
+						</tr>			
 					</table>";
 
 					$tbl2 = "<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">";
@@ -178,16 +179,18 @@
 								}
 								
 								$tbl3 .= "
-									<tr>
-								    	<td width=\"5%\"><div style=\"text-align: center;\">".$no."</div></td>
-								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['deposito_account_no']."</div></td>
-								        <td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
-								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_agent']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
-								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
-								        <td width=\"10%\"><div style=\"text-align: center;\">".$status."</div></td>
-								    </tr>
+								<tr>
+									<td width=\"5%\"><div style=\"text-align: center;\">".$no."</div></td>
+									<td width=\"10%\"><div style=\"text-align: center;\">".$val['deposito_account_no']."</div></td>
+									<td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
+									<td width=\"15%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
+									<td width=\"5%\"><div style=\"text-align: center;\">".$val['deposito_account_commission_agent_percentage']."%</div></td>
+									<td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_agent']."</div></td>
+									<td width=\"15%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
+									<td width=\"5%\"><div style=\"text-align: center;\">".$val['deposito_account_commission_supervisor_percentage']."%</div></td>
+									<td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
+									<td width=\"10%\"><div style=\"text-align: center;\">".$status."</div></td>
+								</tr>
 								";
 								$no++;
 
