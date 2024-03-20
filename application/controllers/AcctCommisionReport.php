@@ -59,9 +59,8 @@
 			$acctcommision 	= $this->Commision_Report_model->getAcctCommission($sesi['deposito_account_id'], $sesi['start_date'], $sesi['end_date'], $branch_id);						
 
 			// echo json_encode($acctcommision);
-			// $membername = $this->Commision_Report_model->getMemberName(52);
-			// echo json_encode($membername);
-
+			// // $membername = $this->Commision_Report_model->getMemberName(52);
+			// // echo json_encode($membername);
 			// exit;
 
 
@@ -228,10 +227,12 @@
 					    <tr>
 						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: left;font-size:10;\">No.</div></td>
 						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No. Deposito</div></td>
-						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Tanggal</div></td>
+						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Tanggal</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No.Tabungan/Agent</div></td>
-						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Agent</div></td>
+						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">persen</div></td>
+						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Agent</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">No.Tabungan/Supervisor</div></td>
+						<td width=\"5%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">persen</div></td>
 						<td width=\"15%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Komisi Supervisor</div></td>
 						<td width=\"10%\" style=\"border-bottom: 1px solid black;border-top: 1px solid black\"><div style=\"text-align: center;font-size:10;\">Status</div></td>
 					    </tr>				
@@ -254,11 +255,13 @@
 									<tr>
 								    	<td width=\"5%\"><div style=\"text-align: center;\">".$no."</div></td>
 								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['deposito_account_no']."</div></td>
-								        <td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
+								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_date']."</div></td>
+								        <td width=\"15%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_agent'])."</div></td>
+								        <td width=\"5%\"><div style=\"text-align: center;\">".$val['deposito_account_commission_agent_percentage']."%</div></td>
 								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_agent']."</div></td>
-								        <td width=\"20%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
-								        <td width=\"10%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
+								        <td width=\"15%\"><div style=\"text-align: left;\">".$this->Commision_Report_model->getMemberName($val['savings_account_id_supervisor'])."</div></td>
+								        <td width=\"5%\"><div style=\"text-align: center;\">".$val['deposito_account_commission_supervisor_percentage']."%</div></td>
+								        <td width=\"15%\"><div style=\"text-align: center;\">".$val['commission_disbursed_supervisor']."</div></td>
 								        <td width=\"10%\"><div style=\"text-align: center;\">".$status."</div></td>
 								    </tr>
 								";
@@ -273,10 +276,10 @@
 						<tr>
 							<td colspan =\"3\" style=\"border-top: 1px solid black;\"><div style=\"font-size:9;text-align:left;font-style:italic\">Printed : ".date('d-m-Y H:i:s')."  ".$this->Commision_Report_model->getUserName($auth['user_id'])."</div></td>
 							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;font-weight:bold;text-align:center\">Total </div></td>
-							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalagent, 2)."</div></td>
+							<td colspan =\"2\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalagent, 2)."</div></td>
 							<td style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
-							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalsupervisor, 2)."</div></td>
-							<td colspan =\"1\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
+							<td colspan =\"2\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\">".number_format($totalsupervisor, 2)."</div></td>
+							<td colspan =\"2\" style=\"border-top: 1px solid black\"><div style=\"font-size:9;text-align:center\"></div></td>
 						</tr>						
 					</table>";
 
