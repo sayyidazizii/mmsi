@@ -251,6 +251,12 @@ $this->session->unset_userdata('message');
 									<label class="control-label">Jatuh Tempo/Periode</label>
 								</div>
 							</div>
+							<div class="col-md-6">
+								<div class="form-group form-md-line-input">
+									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $data['deposito_period']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
+								</div>
+							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
@@ -272,8 +278,8 @@ $this->session->unset_userdata('message');
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $data['deposito_period']); ?>" onChange="function_elements_add(this.name, this.value);" />
-									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_penalty_percentage" id="deposito_penalty_percentage" autocomplete="off" value="<?php echo set_value('deposito_penalty_percentage', $data['deposito_penalty_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Persentase Penalty<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
@@ -288,36 +294,24 @@ $this->session->unset_userdata('message');
 									<label class="control-label">Poin<span class="required">*</span></label>
 								</div>
 							</div>
-							<!-- <div class="col-md-6">
-								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_bv_percentage" id="deposito_bv_percentage" autocomplete="off" value="<?php echo set_value('deposito_bv_percentage', $data['deposito_bv_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
-									<label class="control-label">BV<span class="required">*</span></label>
-								</div>
-							</div>
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_cb_percentage" id="deposito_cb_percentage" autocomplete="off" value="<?php echo set_value('deposito_cb_percentage', $data['deposito_cb_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" readonly/>
-									<label class="control-label">Cashback<span class="required">*</span></label>
-								</div>
-							</div>
-							<div class="col-md-6">
-								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission" id="deposito_commission" autocomplete="off" value="<?php echo set_value('deposito_commission', $data['deposito_commission']); ?>" onChange="function_elements_add(this.name, this.value);" />
-									<label class="control-label">Komisi<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_commission_agent_percentage" id="deposito_commission_agent_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_agent_percentage', $data['deposito_commission_agent_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Persentase Komisi Agent<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission_on_hold" id="deposito_commission_on_hold" autocomplete="off" value="<?php echo set_value('deposito_commission_on_hold', $data['deposito_commission_on_hold']); ?>" onChange="function_elements_add(this.name, this.value);" />
-									<label class="control-label">Komisi Ditahan<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_commission_supervisor_percentage" id="deposito_commission_supervisor_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_supervisor_percentage', $data['deposito_commission_supervisor_percentage']); ?>" onChange="function_elements_add(this.name, this.value);"/>
+									<label class="control-label">Persentase Komisi Supervisor<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission_disbursed" id="deposito_commission_disbursed" autocomplete="off" value="<?php echo set_value('deposito_commission_disbursed', $data['deposito_commission_disbursed']); ?>" onChange="function_elements_add(this.name, this.value);" readonly/>
-									<label class="control-label">Komisi Dicairkan<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_commission_period" id="deposito_commission_period" autocomplete="off" value="<?php echo set_value('deposito_commission_period', $data['deposito_commission_period']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Jangka Waktu Komisi<span class="required">*</span></label>
 								</div>
-							</div> -->
+							</div>
 						</div>
 
 

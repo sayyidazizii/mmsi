@@ -8,6 +8,8 @@ class CoreMember extends CI_Controller{
 		$this->load->model('CoreMember_model');
 		$this->load->model('Library_model');
 		$this->load->model('CoreBranch_model');
+		$this->load->model('CoreMemberBank_model');
+		$this->load->model('AcctbankAccount_model');
 		$this->load->helper('sistem');
 		$this->load->helper('url');
 		$this->load->database('default');
@@ -81,6 +83,9 @@ class CoreMember extends CI_Controller{
 
 			$button_non_activate 		= '<a href="' . base_url() . 'member/non-activate/' . $customers->member_id . '" class="btn default btn-xs purple", onClick="javascript:return confirm(\'apakah yakin ingin dinon-aktifkan ?\')" role="button"><i class="fa fa-times"></i> Non Aktifkan</a>';
 
+			$button_bank 				= '<a href="' . base_url() . 'member/list-bank/' . $customers->member_id . '" class="btn default btn-xs grey"><i class="fa fa-bank"></i> Bank</a>';
+
+
 			$button = '';
 
 			if ($detail_menu_id_mapping == 1) {
@@ -101,6 +106,9 @@ class CoreMember extends CI_Controller{
 
 			if ($delete_menu_id_mapping == 1) {
 				$button .= $button_delete;
+			}
+			if ($delete_menu_id_mapping == 1) {
+				$button .= $button_bank;
 			}
 			if ($customers->company_id == 0) {
 				$customers_company_name = 'Tidak Ada';
@@ -3920,6 +3928,79 @@ class CoreMember extends CI_Controller{
 			redirect('member/add');
 		}
 	}
+
+
+
+	//bank
+	public function bankCoreMember($member_id){
+		$member_id 	= $this->uri->segment(3);
+		$data['main_view']['member_id']			= $member_id;
+		$data['main_view']['corememberbank']	= $this->CoreMemberBank_model->getMemberBank($member_id);
+		$data['main_view']['content']			= 'CoreMember/listBankCoreMember_view';
+
+		$this->load->view('MainPage_view', $data);
+	}
+
+	public function addBankCoreMember($member_id){
+		$member_id 	= $this->uri->segment(4);
+		$data['main_view']['member_id']			= $member_id;
+		$data['main_view']['acctbank']			= create_double($this->AcctbankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
+		// echo json_encode($data);
+		// exit;
+		$data['main_view']['content']			= 'CoreMember/addBankCoreMember_view';
+
+		$this->load->view('MainPage_view', $data);
+	}
+
+	public function processAddBank(){
+		$auth = $this->session->userdata('auth');
+		$data = array(
+			'member_id'											=> $this->input->post('member_id', true),
+			'bank_account_id'									=> $this->input->post('bank_account_id', true),
+			'bank_account_number'								=> $this->input->post('bank_account_number', true),
+			'created_id'										=> $auth['user_id'],
+			'created_on'										=> date('Y-m-d H:i:s'),
+		);
+
+		// echo json_encode($data);
+		// exit;
+
+		$this->form_validation->set_rules('bank_account_id', 'bank', 'required');
+		$this->form_validation->set_rules('bank_account_number', 'No rek', 'required');
+
+		// echo json_encode($this->form_validation->run()) ;
+		// exit;
+
+		if ($this->form_validation->run() == true) {
+				if ($this->CoreMemberBank_model->insertBank($data)) {
+					
+					$auth = $this->session->userdata('auth');
+					$msg = "<div class='alert alert-success alert-dismissable'>  
+								<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+									Tambah Data Bank Sukses
+								</div> ";
+					$this->session->set_userdata('message', $msg);
+					redirect('member');
+
+				} else {
+					$this->session->set_userdata('addacctbank', $data);
+					$msg = "<div class='alert alert-danger alert-dismissable'>
+								<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+									Tambah Data Bank gagal
+								</div> ";
+					$this->session->set_userdata('message', $msg);
+					redirect('member');
+				}
+		
+		} else {
+			$this->session->set_userdata('addacctbank', $data);
+			$msg = validation_errors("<div class='alert alert-danger alert-dismissable'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>", '</div>');
+			$this->session->set_userdata('message', $msg);
+			redirect('member');
+		}
+	}
+
+
 
 // 	public function processCoreMemberWorking(){
 // 		$coremember = $this->CoreMember_model->getCoreMember();

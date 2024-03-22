@@ -21,6 +21,7 @@
 
 		$('#commision_agent_percentage').textbox('setValue', 0);
 		$('#commision_supervisor_percentage').textbox('setValue', 0);
+		$('#deposito_account_penalty_amount').textbox('setValue', 0);
 		
 
 		$('#deposito_member_heir').textbox({
@@ -92,7 +93,12 @@
 						$("#deposito_account_serial_no").textbox('setValue', obj['deposito_account_serial_no']);
 						$("#deposito_account_due_date").textbox('setValue', obj['deposito_account_due_date']);
 						$("#deposito_account_nisbah").textbox('setValue', obj['deposito_account_nisbah']);
-
+						
+						$("#deposito_account_penalty_percentage").textbox('setValue', obj['deposit_penalty']);
+						$("#commision_agent_percentage").textbox('setValue', obj['deposito_commission_agent_percentage']);
+						$("#commision_supervisor_percentage").textbox('setValue', obj['deposito_commission_supervisor_percentage']);
+						$("#commision_agent_period").textbox('setValue', obj['deposito_commision_period']);
+						
 					},
 				)
 			}
@@ -100,43 +106,43 @@
 	});
 
 	//komisi agent
-	$(document).ready(function() {
-		$('#core_commision_agent_id').combobox({
-			onChange: function(value) {
-				var core_commision_agent_id = +document.getElementById("core_commision_agent_id").value;
+	// $(document).ready(function() {
+	// 	$('#core_commision_agent_id').combobox({
+	// 		onChange: function(value) {
+	// 			var core_commision_agent_id = +document.getElementById("core_commision_agent_id").value;
 
-				$.post(base_url + 'deposito-account/get-percentage-commision', {
-					core_commision_agent_id: core_commision_agent_id
-					},
-					function(data) {
-						var obj = $.parseJSON(data);
-						$("#commision_agent_percentage").textbox('setValue', obj.commision.commision_percentage);
-						$("#commision_agent_period").textbox('setValue', 12);
-					},
-				)
-			}
-		})
-	});
+	// 			$.post(base_url + 'deposito-account/get-percentage-commision', {
+	// 				core_commision_agent_id: core_commision_agent_id
+	// 				},
+	// 				function(data) {
+	// 					var obj = $.parseJSON(data);
+	// 					$("#commision_agent_percentage").textbox('setValue', obj.commision.commision_percentage);
+	// 					$("#commision_agent_period").textbox('setValue', 12);
+	// 				},
+	// 			)
+	// 		}
+	// 	})
+	// });
 
 
 	//komisi supervisor
-	$(document).ready(function() {
-		$('#core_commision_supervisor_id').combobox({
-			onChange: function(value) {
-				var core_commision_supervisor_id = +document.getElementById("core_commision_supervisor_id").value;
+	// $(document).ready(function() {
+	// 	$('#core_commision_supervisor_id').combobox({
+	// 		onChange: function(value) {
+	// 			var core_commision_supervisor_id = +document.getElementById("core_commision_supervisor_id").value;
 
-				$.post(base_url + 'deposito-account/get-percentage-commision-spv', {
-					core_commision_supervisor_id: core_commision_supervisor_id
-					},
-					function(data) {
-						var obj = $.parseJSON(data);
-						$("#commision_supervisor_percentage").textbox('setValue', obj.commision.commision_percentage);
-						// $("#commision_supervisor_period").textbox('setValue', obj.commision.commision_period);
-					},
-				)
-			}
-		})
-	});
+	// 			$.post(base_url + 'deposito-account/get-percentage-commision-spv', {
+	// 				core_commision_supervisor_id: core_commision_supervisor_id
+	// 				},
+	// 				function(data) {
+	// 					var obj = $.parseJSON(data);
+	// 					$("#commision_supervisor_percentage").textbox('setValue', obj.commision.commision_percentage);
+	// 					// $("#commision_supervisor_period").textbox('setValue', obj.commision.commision_period);
+	// 				},
+	// 			)
+	// 		}
+	// 	})
+	// });
 
 	
 
@@ -159,6 +165,7 @@
 
                 var persentaseKomisiA = parseFloat($('#commision_agent_percentage').val());
                 var persentaseKomisiS = parseFloat($('#commision_supervisor_percentage').val());
+                var persentasepenalty = parseFloat($('#deposito_account_penalty_percentage').val());
 
 
                 // Hitung nominal komisi agent
@@ -168,6 +175,12 @@
 				// Hitung nominal komisi supervisor
                 var nominalKomisiS = nilaiProduk * (persentaseKomisiS / 100);
 				$('#deposito_account_commission_disbursed_supervisor_view').textbox('setValue', nominalKomisiS);
+
+				// Hitung nominal penalty
+                var nominalPenalty = nilaiProduk * (persentasepenalty / 100);
+				$('#deposito_account_penalty_amount_view').textbox('setValue', nominalPenalty);
+
+				// console.log(nominalPenalty);
 
             } else {
                 loop = 1;
@@ -403,6 +416,30 @@ $(document).ready(function() {
 		});
 	});
 
+	$(document).ready(function() {
+		$('#deposito_account_penalty_amount_view').textbox({
+			onChange: function(value) {
+
+				if (loop == 0) {
+					loop = 1;
+					return;
+				}
+				if (loop == 1) {
+					loop = 0;
+					var tampil = toRp(value);
+
+					$('#deposito_account_penalty_amount').textbox('setValue', value);
+					$('#deposito_account_penalty_amount_view').textbox('setValue', tampil);
+					console.log(tampil);
+
+				} else {
+					loop = 1;
+					return;
+				}
+			}
+		});
+	});
+
 
 
 
@@ -594,18 +631,11 @@ $this->session->unset_userdata('message');
 											<input type="text" class="easyui-textbox" name="member_agent" id="member_agent" placeholder="Nominal" value="<?php echo set_value('member_agent', $memberagent['savings_account_no']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
-
-									<tr>
-										<td width="35%">Komisi Agent</td>
-										<td width="5%">:</td>
-										<td width="60%"><?php echo form_dropdown('core_commision_agent_id', $commisionagent, set_value('core_commision_agent_id', $data['core_commision_agent_id']), 'id="core_commision_agent_id" class="easyui-combobox" style="width:100%" '); ?></td>
-									</tr>
-
 									<tr>
 										<td width="35%">Persentase (%)</td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" name="commision_agent_percentage" id="commision_agent_percentage" placeholder="persentase" value="<?php echo set_value('commision_agent_percentage', $data['commision_agent_percentage']); ?>" style="width:99.8%" />
+											<input type="text" class="easyui-textbox" name="commision_agent_percentage" id="commision_agent_percentage" placeholder="persentase" value="<?php echo set_value('commision_agent_percentage', $data['commision_agent_percentage']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
 
@@ -614,7 +644,7 @@ $this->session->unset_userdata('message');
 										<td width="35%">Komisi Agent Cair (Rp)<span class="required" style="color : red">*</span></td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_agent_view" id="deposito_account_commission_disbursed_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_agent_view', $data['deposito_account_commission_disbursed_agent_view']); ?>" style="width:99.8%" />
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_agent_view" id="deposito_account_commission_disbursed_agent_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_agent_view', $data['deposito_account_commission_disbursed_agent_view']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_agent" id="deposito_account_commission_disbursed_agent" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_agent', $data['deposito_account_commission_disbursed_agent']); ?>" />
@@ -627,10 +657,10 @@ $this->session->unset_userdata('message');
 									</tr>
 
 									<tr>
-										<td width="35%">Jangka Waktu (bln)</td>
+										<td width="35%">Jangka Waktu Komisi (bln)</td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" name="commision_agent_period" id="commision_agent_period" placeholder="Nominal" value="<?php echo set_value('commision_agent_period', $data['commision_agent_period']); ?>" style="width:99.8%" />
+											<input type="text" class="easyui-textbox" name="commision_agent_period" id="commision_agent_period" placeholder="Nominal" value="<?php echo set_value('commision_agent_period', $data['commision_agent_period']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
 								</table>
@@ -722,6 +752,21 @@ $this->session->unset_userdata('message');
 										</td>
 									</tr>
 									<tr>
+										<td width="35%">Persentase Penalty (%)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_penalty_percentage" id="deposito_account_penalty_percentage" placeholder="Nominal" value="<?php echo set_value('deposito_account_penalty_percentage', $data['deposito_account_penalty_percentage']); ?>" style="width:99.8%" readonly/>
+										</td>
+									</tr>
+									<tr>
+										<td width="35%">Nominal Penalty(Rp)<span class="required" style="color : red">*</span></td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_penalty_amount_view" id="deposito_account_penalty_amount_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_penalty_amount_view', $data['deposito_account_penalty_amount_view']); ?>" style="width:99.8%" readonly/>
+											<input type="hidden" class="easyui-textbox" name="deposito_account_penalty_amount" id="deposito_account_penalty_amount" autocomplete="off" value="<?php echo set_value('deposito_account_penalty_amount', $data['deposito_account_penalty_amount']); ?>" />
+										</td>
+									</tr>
+									<tr>
 										<td><hr></td>
 										<td><hr></td>
 										<td><hr></td>
@@ -735,15 +780,10 @@ $this->session->unset_userdata('message');
 										</td>
 									</tr>
 									<tr>
-										<td width="35%">Komisi Supervisor</td>
-										<td width="5%">:</td>
-										<td width="60%"><?php echo form_dropdown('core_commision_supervisor_id', $commisionspv, set_value('core_commision_supervisor_id', $data['core_commision_supervisor_id']), 'id="core_commision_supervisor_id" class="easyui-combobox" style="width:100%" '); ?></td>
-									</tr>
-									<tr>
 										<td width="35%">Presentase (%)</td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" name="commision_supervisor_percentage" id="commision_supervisor_percentage" placeholder="Nominal" value="<?php echo set_value('commision_supervisor_percentage', $membersupervisor['commision_supervisor_percentage']); ?>" style="width:99.8%"/>
+											<input type="text" class="easyui-textbox" name="commision_supervisor_percentage" id="commision_supervisor_percentage" placeholder="Nominal" value="<?php echo set_value('commision_supervisor_percentage', $membersupervisor['commision_supervisor_percentage']); ?>" style="width:99.8%" readonly/>
 										</td>
 									</tr>
 									<input type="hidden" class="" name="savings_account_id_supervisor" id="savings_account_id_supervisor" autocomplete="off" value="<?php echo set_value('savings_account_id_supervisor', $membersupervisor['savings_account_id']); ?>" />
@@ -751,7 +791,7 @@ $this->session->unset_userdata('message');
 										<td width="35%">Komisi Supervisor Cair (Rp)<span class="required" style="color : red">*</span></td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_supervisor_view" id="deposito_account_commission_disbursed_supervisor_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_supervisor_view', $data['deposito_account_commission_disbursed_supervisor_view']); ?>" style="width:99.8%" />
+											<input type="text" class="easyui-textbox" name="deposito_account_commission_disbursed_supervisor_view" id="deposito_account_commission_disbursed_supervisor_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_disbursed_supervisor_view', $data['deposito_account_commission_disbursed_supervisor_view']); ?>" style="width:99.8%" readonly	/>
 										</td>
 									</tr>
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_disbursed_supervisor" id="deposito_account_commission_disbursed_supervisor" autocomplete="off" value="<?php echo set_value('deposito_account_commission_disbursed_supervisor', $data['deposito_account_commission_disbursed_supervisor']); ?>" />
@@ -762,15 +802,6 @@ $this->session->unset_userdata('message');
 											<input type="text" class="easyui-textbox" name="deposito_account_commission_on_hold_supervisor_view" id="deposito_account_commission_on_hold_supervisor_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_commission_on_hold_supervisor_view', $data['deposito_account_commission_on_hold_supervisor_view']); ?>" style="width:99.8%" />
 										</td>
 									</tr>
-
-									<tr hidden>
-										<td width="35%">Jangka Waktu (bln)</td>
-										<td width="5%">:</td>
-										<td width="60%">
-											<input type="text" class="easyui-textbox" name="commision_supervisor_period" id="commision_supervisor_period" placeholder="Nominal" value="<?php echo set_value('commision_supervisor_period', $data['commision_supervisor_period']); ?>" style="width:99.8%" />
-										</td>
-									</tr>
-
 									<input type="hidden" class="easyui-textbox" name="deposito_account_commission_on_hold_supervisor" id="deposito_account_commission_on_hold_supervisor" autocomplete="off" value="<?php echo set_value('deposito_account_commission_on_hold_supervisor', $data['deposito_account_commission_on_hold_supervisor']); ?>" />
 									<tr>
 										<td width="35%">Buffer (Rp)<span class="required" style="color : red">*</span></td>

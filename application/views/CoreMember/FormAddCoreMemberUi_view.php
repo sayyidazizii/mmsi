@@ -1140,6 +1140,12 @@ if (!is_array($data)) {
 											<?php echo form_dropdown('member_reference', $corememberref, set_value('member_no', $data['member_reference']), 'id="member_reference" class="easyui-combobox" style="width: 100%"'); ?>
 										</td>
 									</tr>
+									<tr>
+										<td colspan="3" align="left"><b>Rekening Pribadi</b></td>
+									</tr>
+									<tr>
+									
+									</tr>
 								</table>
 							</div>
 							<div class="col-md-1"></div>

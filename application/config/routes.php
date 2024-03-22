@@ -124,6 +124,10 @@ $route['member/get-list-mutation']                      = 'CoreMember/getListCor
 $route['member/get-list-mutation']                      = 'CoreMember/getListCoreMemberMutation';
 $route['member/change-member-class/(:num)']             = 'CoreMember/changeMemberClass/$1';
 $route['member/change-company/(:num)']                  = 'CoreMember/changeCompany/$1';
+$route['member/list-bank/(:num)']                       = 'CoreMember/bankCoreMember/$1';
+$route['member/list-bank/add/(:num)']                   = 'CoreMember/addBankCoreMember/$1';
+$route['member/list-bank/save']                         = 'CoreMember/processAddBank/';
+
 
 
 // CORE MEMBER TRANSFER MUTATION

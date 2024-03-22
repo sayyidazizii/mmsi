@@ -172,6 +172,12 @@ $this->session->unset_userdata('message');
 									<label class="control-label">Jatuh Tempo/Periode</label>
 								</div>
 							</div>
+							<div class="col-md-6">
+								<div class="form-group form-md-line-input">
+									<?php echo form_dropdown('deposito_interest_period', $depositointerestperiod, set_value('deposito_interest_period', $acctdeposito['deposito_interest_period']), 'id="deposito_interest_period" class="form-control select2me" '); ?>
+									<label class="control-label">Jatuh Tempo/Periode</label>
+								</div>
+							</div>
 						</div>
 						<div class="row">
 							<div class="col-md-6">
@@ -182,8 +188,8 @@ $this->session->unset_userdata('message');
 							</div>
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_interest_rate" id="deposito_interest_rate" autocomplete="off" value="<?php echo set_value('deposito_interest_rate', $acctdeposito['deposito_interest_rate']); ?>" />
-									<label class="control-label">Bunga<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $acctdeposito['deposito_period']); ?>" />
+									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
 								</div>
 							</div>
 						</div>
@@ -191,8 +197,8 @@ $this->session->unset_userdata('message');
 						<div class="row">
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $acctdeposito['deposito_period']); ?>" />
-									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_penalty_percentage" id="deposito_penalty_percentage" autocomplete="off" value="<?php echo set_value('deposito_penalty_percentage', $acctdeposito['deposito_penalty_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Persentase Penalty<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
@@ -209,40 +215,26 @@ $this->session->unset_userdata('message');
 								</div>
 							</div>
 						</div>
-						<!-- <div class="row">
-							<div class="col-md-6">
+						<div class="row">
+						<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_bv_percentage" id="deposito_bv_percentage" autocomplete="off" value="<?php echo set_value('deposito_bv_percentage', $acctdeposito['deposito_bv_percentage']); ?>" />
-									<label class="control-label">BV<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_commission_agent_percentage" id="deposito_commission_agent_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_agent_percentage', $acctdeposito['deposito_commission_agent_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Persentase Komisi Agent<span class="required">*</span></label>
 								</div>
 							</div>
-							<div class="col-md-6">
+							<div class="col-md-3">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_cb_percentage" id="deposito_cb_percentage" autocomplete="off" value="<?php echo set_value('deposito_cb_percentage', $acctdeposito['deposito_cb_percentage']); ?>" readonly/>
-									<label class="control-label">Cashback<span class="required">*</span></label>
+									<input type="text" class="form-control" name="deposito_commission_supervisor_percentage" id="deposito_commission_supervisor_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_supervisor_percentage', $acctdeposito['deposito_commission_supervisor_percentage']); ?>" onChange="function_elements_add(this.name, this.value);"/>
+									<label class="control-label">Persentase Komisi Supervisor<span class="required">*</span></label>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group form-md-line-input">
+									<input type="text" class="form-control" name="deposito_commission_period" id="deposito_commission_period" autocomplete="off" value="<?php echo set_value('deposito_commission_period', $acctdeposito['deposito_commission_period']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Jangka Waktu Komisi<span class="required">*</span></label>
 								</div>
 							</div>
 						</div>
-						<div class="row">
-							<div class="col-md-6">
-								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission" id="deposito_commission" autocomplete="off" value="<?php echo set_value('deposito_commission', $acctdeposito['deposito_commission']); ?>" />
-									<label class="control-label">Komisi<span class="required">*</span></label>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission_on_hold" id="deposito_commission_on_hold" autocomplete="off" value="<?php echo set_value('deposito_commission_on_hold', $acctdeposito['deposito_commission_on_hold']); ?>" />
-									<label class="control-label">Komisi Ditahan<span class="required">*</span></label>
-								</div>
-							</div>
-							<div class="col-md-3">
-								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_commission_disbursed" id="deposito_commission_disbursed" autocomplete="off" value="<?php echo set_value('deposito_commission_disbursed', $acctdeposito['deposito_commission_disbursed']); ?>" readonly/>
-									<label class="control-label">Komisi Dicairkan<span class="required">*</span></label>
-								</div>
-							</div>
-						</div> -->
 
 						<div class="row">
 						<div class="col-md-12" style="padding-top: 10px; text-align:right;">

@@ -93,17 +93,22 @@ class AcctDeposito extends CI_Controller{
 		$auth = $this->session->userdata('auth');
 
 		$data = array(
-			'deposito_code'					 => $this->input->post('deposito_code', true),
-			'deposito_name'					 => $this->input->post('deposito_name', true),
-			'account_id'					 => $this->input->post('account_id', true),
-			'account_basil_id'				 => $this->input->post('account_basil_id', true),
-			'deposito_period'				 => $this->input->post('deposito_period', true),
-			'deposito_interest_rate'		 => $this->input->post('deposito_interest_rate', true),
-			'deposito_interest_period'		 => $this->input->post('deposito_interest_period', true),
-			'deposito_availability'		 	 => $this->input->post('deposito_availability', true),
-			'deposito_point'		 	 	 => $this->input->post('deposito_point', true),
-			'created_id'					 => $auth['user_id'],
-			'created_on'					 => date('Y-m-d H:i:s'),
+			'deposito_code'					 			=> $this->input->post('deposito_code', true),
+			'deposito_name'					 			=> $this->input->post('deposito_name', true),
+			'account_id'					 			=> $this->input->post('account_id', true),
+			'account_basil_id'				 			=> $this->input->post('account_basil_id', true),
+			'deposito_period'				 			=> $this->input->post('deposito_period', true),
+			'deposito_interest_rate'		 			=> $this->input->post('deposito_interest_rate', true),
+			'deposito_interest_period'		 			=> $this->input->post('deposito_interest_period', true),
+			'deposito_availability'		 	 			=> $this->input->post('deposito_availability', true),
+			'deposito_point'		 	 	 			=> $this->input->post('deposito_point', true),
+			'deposito_availability'		 	 			=> $this->input->post('deposito_availability', true),
+			'deposito_penalty_percentage'	 			=> $this->input->post('deposito_penalty_percentage', true),
+			'deposito_commission_agent_percentage'		=> $this->input->post('deposito_commission_agent_percentage', true),
+			'deposito_commission_supervisor_percentage'	=> $this->input->post('deposito_commission_supervisor_percentage', true),
+			'deposito_commission_period'		 	 	=> $this->input->post('deposito_commission_period', true),
+			'created_id'					 			=> $auth['user_id'],
+			'created_on'					 			=> date('Y-m-d H:i:s'),
 		);
 
 		$this->form_validation->set_rules('deposito_code', 'Kode Simpanan Berjangka', 'required');
@@ -111,7 +116,11 @@ class AcctDeposito extends CI_Controller{
 		$this->form_validation->set_rules('deposito_interest_period', 'Jatuh Tempo/Period', 'required');
 		$this->form_validation->set_rules('account_id', 'Nomor Perkiraan', 'required');
 		$this->form_validation->set_rules('deposito_availability', 'Ketersediaan', 'required');
-		$this->form_validation->set_rules('deposito_point', 'Poin', 'required');
+		$this->form_validation->set_rules('deposito_penalty_percentage', 'Penalty', 'required');
+		$this->form_validation->set_rules('deposito_commission_agent_percentage', 'Persentase Agent', 'required');
+		$this->form_validation->set_rules('deposito_commission_supervisor_percentage', 'Persentase Supervisor', 'required');
+		$this->form_validation->set_rules('deposito_commission_period', 'Jangka Waktu komisi', 'required');
+
 
 		// $this->form_validation->set_rules('account_basil_id', 'Nomor Perkiraan Basil', 'required');
 
@@ -162,6 +171,8 @@ class AcctDeposito extends CI_Controller{
 		$data['main_view']['depositointerestperiod']	= $this->configuration->DepositoInterestPeriod();
 		$data['main_view']['acctaccount']				= create_double($this->AcctDeposito_model->getAcctAccount(), 'account_id', 'account_code');
 		$data['main_view']['acctdeposito']				= $this->AcctDeposito_model->getAcctDeposito_Detail($this->uri->segment(3));
+		// echo json_encode($data);
+		// exit;
 		$data['main_view']['content']					= 'AcctDeposito/FormEditAcctDeposito_view';
 		
 		$this->load->view('MainPage_view', $data);
@@ -171,16 +182,20 @@ class AcctDeposito extends CI_Controller{
 		$auth = $this->session->userdata('auth');
 
 		$data = array(
-			'deposito_id'					 => $this->input->post('deposito_id', true),
-			'deposito_code'					 => $this->input->post('deposito_code', true),
-			'deposito_name'					 => $this->input->post('deposito_name', true),
-			'account_id'					 => $this->input->post('account_id', true),
-			'account_basil_id'				 => $this->input->post('account_basil_id', true),
-			'deposito_period'				 => $this->input->post('deposito_period', true),
-			'deposito_interest_rate'		 => $this->input->post('deposito_interest_rate', true),
-			'deposito_interest_period'		 => $this->input->post('deposito_interest_period', true),
-			'deposito_availability'		 	 => $this->input->post('deposito_availability', true),
-			'deposito_point'		 	 	 => $this->input->post('deposito_point', true),
+			'deposito_id'					 			=> $this->input->post('deposito_id', true),
+			'deposito_code'					 			=> $this->input->post('deposito_code', true),
+			'deposito_name'					 			=> $this->input->post('deposito_name', true),
+			'account_id'					 			=> $this->input->post('account_id', true),
+			'account_basil_id'				 			=> $this->input->post('account_basil_id', true),
+			'deposito_period'				 			=> $this->input->post('deposito_period', true),
+			'deposito_interest_rate'		 			=> $this->input->post('deposito_interest_rate', true),
+			'deposito_interest_period'		 			=> $this->input->post('deposito_interest_period', true),
+			'deposito_availability'		 	 			=> $this->input->post('deposito_availability', true),
+			'deposito_point'		 	 	 			=> $this->input->post('deposito_point', true),
+			'deposito_penalty_percentage'	 			=> $this->input->post('deposito_penalty_percentage', true),
+			'deposito_commission_agent_percentage'		=> $this->input->post('deposito_commission_agent_percentage', true),
+			'deposito_commission_supervisor_percentage'	=> $this->input->post('deposito_commission_supervisor_percentage', true),
+			'deposito_commission_period'		 	 	=> $this->input->post('deposito_commission_period', true),
 
 		);
 

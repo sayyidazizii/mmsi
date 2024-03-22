@@ -407,6 +407,12 @@ class AcctDepositoAccount extends CI_Controller{
 		$depositonisbah 			= $this->AcctDepositoAccount_model->getDepositoNisbah($deposito_id);
 		$lastdepositoaccountno 		= $this->AcctDepositoAccount_model->getLastAccountDepositoNo($auth['branch_id'], $deposito_id);
 
+		$depositpenalty 			= $this->AcctDepositoAccount_model->getPenalty($deposito_id);
+		$depositoCommisionAgent 	= $this->AcctDepositoAccount_model->getCommisionAgent($deposito_id);
+		$depositoCommisionSpv 		= $this->AcctDepositoAccount_model->getCommisionSpv($deposito_id);
+		$depositoCommisionPeriod 	= $this->AcctDepositoAccount_model->getCommisionPeriod($deposito_id);
+
+
 		if ($lastdepositoaccountno->num_rows() <> 0) {
 			//jika kode ternyata sudah ada.      
 			$data = $lastdepositoaccountno->row_array();
@@ -440,13 +446,17 @@ class AcctDepositoAccount extends CI_Controller{
 
 		// $result = array();
 		$result = array(
-			'deposito_period'						=> $depositoperiod,
-			'deposito_interest_period'				=> $depositointerestperiod,
-			'deposito_interest_period_view'			=> $depositointerestperiod_view,
-			'deposito_account_no'					=> $new_deposito_account_no,
-			'deposito_account_serial_no'			=> $new_deposito_account_serial,
-			'deposito_account_due_date'				=> $deposito_due_date,
-			'deposito_account_nisbah'				=> $depositonisbah,
+			'deposito_period'							=> $depositoperiod,
+			'deposito_interest_period'					=> $depositointerestperiod,
+			'deposito_interest_period_view'				=> $depositointerestperiod_view,
+			'deposito_account_no'						=> $new_deposito_account_no,
+			'deposito_account_serial_no'				=> $new_deposito_account_serial,
+			'deposito_account_due_date'					=> $deposito_due_date,
+			'deposito_account_nisbah'					=> $depositonisbah,
+			'deposit_penalty'							=> $depositpenalty,
+			'deposito_commission_agent_percentage'		=> $depositoCommisionAgent,
+			'deposito_commission_supervisor_percentage'	=> $depositoCommisionSpv,
+			'deposito_commision_period'				 	=> $depositoCommisionPeriod,
 		);
 
 
@@ -515,12 +525,11 @@ class AcctDepositoAccount extends CI_Controller{
 			'created_id'										=> $auth['user_id'],
 			'created_on'										=> date('Y-m-d H:i:s'),
 
-			'core_commision_agent_id'							=> $this->input->post('core_commision_agent_id', true),
 			'deposito_account_commission_agent_percentage'		=> $this->input->post('commision_agent_percentage', true),
 			'deposito_account_commission_period'				=> $this->input->post('commision_agent_period', true),
-			'core_commision_supervisor_id'						=> $this->input->post('core_commision_supervisor_id', true),
 			'deposito_account_commission_supervisor_percentage'	=> $this->input->post('commision_supervisor_percentage', true),
-
+			'deposito_account_penalty_percentage'				=> $this->input->post('deposito_account_penalty_percentage', true),
+			'deposito_account_penalty_amount'					=> $this->input->post('deposito_account_penalty_amount', true),
 		);
 
 		// echo json_encode($data);

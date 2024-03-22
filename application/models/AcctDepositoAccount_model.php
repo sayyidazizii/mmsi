@@ -274,6 +274,43 @@ class AcctDepositoAccount_model extends CI_Model
 		return $result['deposito_interest_rate'];
 	}
 
+	//Penalty
+	public function getPenalty($deposito_id){
+		$this->db->select('deposito_penalty_percentage');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_penalty_percentage'];
+	}
+
+	//KOMISI agent
+	public function getCommisionAgent($deposito_id){
+		$this->db->select('deposito_commission_agent_percentage');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_commission_agent_percentage'];
+	}
+	
+	//KOMISI spv
+	public function getCommisionSpv($deposito_id){
+		$this->db->select('deposito_commission_supervisor_percentage');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_commission_supervisor_percentage'];
+	}
+
+	//Jangka waktu KOMISI
+	public function getCommisionPeriod($deposito_id){
+		$this->db->select('deposito_commission_period');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_commission_period'];
+	}
+
+
 	public function getSavingsAccountAgent($deposito_account_id){
 		$this->db->select('savings_account_id_agent');
 		$this->db->from('acct_deposito_account');

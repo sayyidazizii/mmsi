@@ -72,11 +72,10 @@
 									<th width="10%">Jatuh Tempo/Periode</th>
 									<th width="15%">Ketersediaan</th>
 									<th width="15%">Poin</th>
-									<!-- <th width="15%">BV</th>
-									<th width="15%">CashBack</th>
-									<th width="15%">Komisi</th>
-									<th width="15%">Komisi Ditahan</th>
-									<th width="15%">Komisi Dicairkan</th> -->
+									<th width="15%">Penalty</th>
+									<th width="15%">Persentase komisi Agent</th>
+									<th width="15%">Persentase komisi Supervisor</th>
+									<th width="15%">Jangka Waktu Komisi</th>
 									<th width="10%">Action</th>
 								</tr>
 							</thead>
@@ -104,7 +103,10 @@
 												<td>" . $period[$val['deposito_interest_period']] . "</td>
 												<td>" . $val['deposito_availability'] . "</td>
 												<td>" . $val['deposito_point'] . "</td>
-												
+												<td>" . $val['deposito_penalty_percentage'] . "</td>
+												<td>" . $val['deposito_commission_agent_percentage'] . "</td>
+												<td>" . $val['deposito_commission_supervisor_percentage'] . "</td>
+												<td>" . $val['deposito_commission_period'] . "</td>
 												<td>
 													<a href='" . $this->config->item('base_url') . 'deposito/edit/' . $val['deposito_id'] . "' class='btn default btn-xs purple'>
 														<i class='fa fa-edit'></i> Edit
