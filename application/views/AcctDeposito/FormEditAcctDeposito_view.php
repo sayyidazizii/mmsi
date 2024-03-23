@@ -174,8 +174,8 @@ $this->session->unset_userdata('message');
 							</div>
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<?php echo form_dropdown('deposito_interest_period', $depositointerestperiod, set_value('deposito_interest_period', $acctdeposito['deposito_interest_period']), 'id="deposito_interest_period" class="form-control select2me" '); ?>
-									<label class="control-label">Jatuh Tempo/Periode</label>
+									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $acctdeposito['deposito_period']); ?>" />
+									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
 								</div>
 							</div>
 						</div>
@@ -188,9 +188,9 @@ $this->session->unset_userdata('message');
 							</div>
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
-									<input type="text" class="form-control" name="deposito_period" id="deposito_period" autocomplete="off" value="<?php echo set_value('deposito_period', $acctdeposito['deposito_period']); ?>" />
-									<label class="control-label">Jangka Waktu<span class="required">*</span></label>
-								</div>
+								<input type="text" class="form-control" name="deposito_interest_rate" id="deposito_interest_rate" autocomplete="off" value="<?php echo set_value('deposito_interest_rate', $acctdeposito['deposito_interest_rate']); ?>" onChange="function_elements_add(this.name, this.value);" />
+								<label class="control-label">Bunga<span class="required">*</span></label>
+								</div>	
 							</div>
 						</div>
 

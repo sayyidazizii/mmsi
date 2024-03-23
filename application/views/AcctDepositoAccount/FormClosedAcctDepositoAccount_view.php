@@ -28,7 +28,22 @@
 				.replace(/(\d{3}(?!$))/g, '$1,')
 				.split('').reverse().join('');
 			return rupiah + '.' + cents.slice(0, 2);
+		
 		}
+
+		var saldo = parseInt($('#deposito_account_amount').val());
+        console.log(saldo);
+
+        var persentasepenalty = parseFloat($('#deposito_account_penalty_percentage').val());
+        console.log(persentasepenalty);
+
+        // Hitung nominal penalty
+		var nominalPenalty = saldo * (persentasepenalty / 100);
+		$('#deposito_account_penalty_amount_view').textbox('setValue', toRp(nominalPenalty));
+		$('#deposito_account_penalty_amount').textbox('setValue', nominalPenalty);
+
+
+
 		
 		function function_elements_add(name, value){
 			$.ajax({
@@ -39,7 +54,6 @@
 				}
 			});
 		}
-		
 		
 
 		$('#deposito_account_amount_adm_view').textbox({
@@ -225,8 +239,10 @@
 										<td width="35%">Saldo</td>
 										<td width="5%">:</td>
 										<td width="60%">
-											<input type="text" class="easyui-textbox" style="width:100%" name="deposito_account_amount" id="deposito_account_amount" value="<?php echo number_format($acctdepositoaccount['deposito_account_amount'], 2);?>" readonly/>
+											<input type="text" class="easyui-textbox" style="width:100%" name="deposito_account_amount_view" id="deposito_account_amount_view" value="<?php echo number_format($acctdepositoaccount['deposito_account_amount'], 2);?>" readonly/>
+											<input type="hidden" class="easyui-textbox" name="deposito_account_amount" id="deposito_account_amount" value="<?php echo $acctdepositoaccount['deposito_account_amount'];?>"/>
 										</td>
+
 									</tr>
 									<tr>
 										<td width="35%">Tanggal Mulai</td>
@@ -266,6 +282,22 @@
 										<td width="5%">:</td>
 										<td width="60%"><input type="text" class="easyui-textbox" name="tax_amount_view" id="tax_amount_view" autocomplete="off" style="width: 100%" value="<?php echo nominal($tax_amount) ?>" readonly/>
 										<input type="hidden" class="easyui-textbox" name="tax_amount" id="tax_amount" autocomplete="off" value="<?php echo $tax_amount ?>"/></td>
+										
+									</tr>
+									<tr>
+										<td width="35%">Persen Penalty (%)</td>
+										<td width="5%">:</td>
+										<td width="60%">
+										<input type="text" class="easyui-textbox" style="width:100%" name="deposito_account_penalty_percentage" id="deposito_account_penalty_percentage" value="<?php echo number_format($acctdepositoaccount['deposito_account_penalty_percentage'], 2);?>" readonly/>
+										</td>										
+									</tr>
+									<tr>
+										<td width="35%">Nominal Penalty (Rp)</td>
+										<td width="5%">:</td>
+										<td width="60%">
+											<input type="text" class="easyui-textbox" name="deposito_account_penalty_amount_view" id="deposito_account_penalty_amount_view" placeholder="Nominal" value="<?php echo set_value('deposito_account_penalty_amount_view', $acctdepositoaccount['deposito_account_penalty_amount_view']); ?>" style="width:99.8%" readonly/>
+											<input type="hidden" class="easyui-textbox" name="deposito_account_penalty_amount" id="deposito_account_penalty_amount" autocomplete="off" value="<?php echo set_value('deposito_account_penalty_amount', $acctdepositoaccount['deposito_account_penalty_amount']); ?>" />
+										</td>
 										
 									</tr>
 									<tr>

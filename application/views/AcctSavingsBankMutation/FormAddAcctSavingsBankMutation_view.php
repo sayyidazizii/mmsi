@@ -68,6 +68,31 @@
 			})
 	});
 
+
+	$(document).ready(function(){
+		 $('#member_bank_id').combobox({
+			  onChange: function(value){
+			  	var member_bank_id 	= +document.getElementById("member_bank_id").value;
+
+				var bank_account_text = $('#member_bank_id').combobox('getText');
+				// console.log(bank_account_text);
+            	$('#savings_bank_mutation_remark').text(bank_account_text);
+
+			   $.post(base_url + 'savings-bank-mutation/get-bank-account',
+				{member_bank_id: member_bank_id},
+	            function(data){	
+	            var obj = $.parseJSON(data)		   
+	            	console.log(data);
+	            	$('#bank_account_id').textbox('setValue',obj);
+				},
+				
+				)
+			  }
+			})
+	});
+
+	
+
 	function calculateSavings(){
 		var savings_bank_mutation_amount					= $('#savings_bank_mutation_amount').val();
 		var savings_bank_mutation_opening_balance			= $('#savings_bank_mutation_opening_balance').val();	
@@ -259,7 +284,9 @@
 									<tr>
 										<td width="35%">Bank Transfer</td>
 										<td width="5%"> : </td>
-										<td width="60%"><?php echo form_dropdown('bank_account_id', $acctbankaccount, set_value('bank_account_id',$data['bank_account_id']),'id="bank_account_id" class="easyui-combobox" style="width:70%"');?></td>
+										<td width="60%"><?php echo form_dropdown('member_bank_id', $memberBank, set_value('member_bank_id',$memberBank['member_bank_id']),'id="member_bank_id" class="easyui-combobox" style="width:70%"');?></td>
+										<input type="hidden" class="easyui-textbox" name="bank_account_id" id="bank_account_id" autocomplete="off" readonly/>
+									
 									</tr>
 									<tr>
 										<td width="35%">Sandi</td>

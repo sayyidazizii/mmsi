@@ -16,9 +16,10 @@
 		
 		public function getMemberBank($member_id){
 			$this->db->select('*');
+			$this->db->join('acct_bank_account', 'acct_bank_account.bank_account_id = core_member_bank.bank_account_id');
 			$this->db->from('core_member_bank');
-			$this->db->where('member_id', $member_id);
-			$this->db->where('data_state', 0);
+			$this->db->where('core_member_bank.member_id', $member_id);
+			$this->db->where('core_member_bank.data_state', 0);
 			$result = $this->db->get()->result_array();
 			return $result;
 		}
@@ -31,8 +32,17 @@
 				return false;
 			}
 		}
+
+		public function getAcctBankAccount_Detail($member_bank_id){
+			$this->db->select('core_member_bank.member_bank_id,core_member_bank.member_id,core_member_bank.bank_account_id,core_member_bank.bank_account_number,core_member_bank.data_state,acct_bank_account.bank_account_id,acct_bank_account.account_id,acct_bank_account.bank_account_code,acct_bank_account.bank_account_name');
+			$this->db->from('core_member_bank');
+			$this->db->join('acct_bank_account', 'acct_bank_account.bank_account_id = core_member_bank.bank_account_id');
+			$this->db->where('core_member_bank.data_state', 0);
+			$this->db->where('core_member_bank.member_bank_id', $member_bank_id);
+			return $this->db->get()->row_array();
+		}
 		
-		public function updateBank($member_bank_id){
+		public function updateBank($data){
 			$this->db->where("member_bank_id",$data['member_bank_id']);
 			$query = $this->db->update($this->table, $data);
 			if($query){

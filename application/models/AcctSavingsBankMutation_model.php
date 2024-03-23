@@ -207,6 +207,26 @@
 			return $this->db->get()->row_array();
 		}
 
+		public function getMemberBank($member_id){
+			$this->db->select('*,CONCAT(acct_bank_account.bank_account_name," - ",core_member_bank.bank_account_number) AS bank_account');
+			$this->db->from('core_member_bank');
+			$this->db->join('acct_bank_account', 'acct_bank_account.bank_account_id = core_member_bank.bank_account_id');
+			$this->db->where('core_member_bank.member_id', $member_id);
+			$this->db->where('core_member_bank.data_state', 0);
+			$result = $this->db->get()->result_array();
+			return $result;
+		}
+
+		public function getBankAccount($member_bank_id){
+			$this->db->select('*');
+			$this->db->from('core_member_bank');
+			$this->db->join('acct_bank_account', 'acct_bank_account.bank_account_id = core_member_bank.bank_account_id');
+			$this->db->where('core_member_bank.member_bank_id', $member_bank_id);
+			$this->db->where('core_member_bank.data_state', 0);
+			$result = $this->db->get()->row_array();
+			return $result['bank_account_id'];
+		}
+
 		public function insertAcctSavingsBankMutation($data){
 			return $query = $this->db->insert('acct_savings_bank_mutation',$data);
 		}

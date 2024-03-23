@@ -127,7 +127,9 @@ $route['member/change-company/(:num)']                  = 'CoreMember/changeComp
 $route['member/list-bank/(:num)']                       = 'CoreMember/bankCoreMember/$1';
 $route['member/list-bank/add/(:num)']                   = 'CoreMember/addBankCoreMember/$1';
 $route['member/list-bank/save']                         = 'CoreMember/processAddBank/';
-
+$route['member/list-bank/edit/(:num)']                  = 'CoreMember/editBankCoreMember/$1';
+$route['member/list-bank/update']                       = 'CoreMember/processEditBank/';
+$route['member/list-bank/delete/(:num)/(:num)']         = 'CoreMember/processDeleteBank/$1/$1';
 
 
 // CORE MEMBER TRANSFER MUTATION
@@ -194,6 +196,8 @@ $route['savings-bank-mutation/process-add']                 = 'AcctSavingsBankMu
 $route['savings-bank-mutation/process-void']                = 'AcctSavingsBankMutation/processVoidAcctSavingsBankMutation';
 $route['savings-bank-mutation/add/(:num)']                  = 'AcctSavingsBankMutation/addAcctSavingsBankMutation/$1';
 $route['savings-bank-mutation/filter']                      = 'AcctSavingsBankMutation/filter';
+$route['savings-bank-mutation/get-bank-account']            = 'AcctSavingsBankMutation/getBankId';
+
 
 //ACCT DEPOSITO PROFIT SHARING CHECK
 $route['deposito-profit-sharing-check']                                    = 'AcctDepositoProfitSharingCheck';

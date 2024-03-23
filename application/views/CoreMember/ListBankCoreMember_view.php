@@ -95,13 +95,13 @@
 										echo"
 											<tr>			
 												<td style='text-align:center'>$no.</td>
-												<td>$val[bank_account_id]</td>
+												<td>$val[bank_account_name]</td>
 												<td>$val[bank_account_number]</td>
 												<td>
-													<a href='".$this->config->item('base_url').'member-class/edit/'.$val['member_class_id']."' class='btn default btn-xs purple'>
+													<a href='".$this->config->item('base_url').'member/list-bank/edit/'.$val['member_bank_id']."' class='btn default btn-xs purple'>
 														<i class='fa fa-edit'></i> Edit
 													</a>
-													<a href='".$this->config->item('base_url').'member-class/delete/'.$val['member_class_id']."'class='btn default btn-xs red', onClick='javascript:return confirm(\"apakah yakin ingin dihapus ?\")'>
+													<a href='".$this->config->item('base_url').'member/list-bank/delete/'.$val['member_id']."/".$val['member_bank_id']."'class='btn default btn-xs red', onClick='javascript:return confirm(\"apakah yakin ingin dihapus ?\")'>
 														<i class='fa fa-trash-o'></i> Hapus
 													</a>
 												</td>

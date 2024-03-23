@@ -3980,8 +3980,7 @@ class CoreMember extends CI_Controller{
 									Tambah Data Bank Sukses
 								</div> ";
 					$this->session->set_userdata('message', $msg);
-					redirect('member');
-
+					redirect('member/list-bank/'.$this->input->post('member_id', true));
 				} else {
 					$this->session->set_userdata('addacctbank', $data);
 					$msg = "<div class='alert alert-danger alert-dismissable'>
@@ -3989,14 +3988,96 @@ class CoreMember extends CI_Controller{
 									Tambah Data Bank gagal
 								</div> ";
 					$this->session->set_userdata('message', $msg);
-					redirect('member');
+					redirect('member/list-bank/'.$this->input->post('member_id', true));
 				}
 		
 		} else {
 			$this->session->set_userdata('addacctbank', $data);
 			$msg = validation_errors("<div class='alert alert-danger alert-dismissable'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>", '</div>');
 			$this->session->set_userdata('message', $msg);
-			redirect('member');
+			redirect('member/list-bank/'.$this->input->post('member_id', true));
+		}
+	}
+
+	public function editBankCoreMember($member_bank_id){
+		$member_id 	= $this->uri->segment(4);
+		$data['main_view']['member_bank_id']	= $member_bank_id;
+		$data['main_view']['acctbank']			= create_double($this->AcctbankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
+		$data['main_view']['member_bank']		= $this->CoreMemberBank_model->getAcctBankAccount_Detail($member_bank_id);
+		// echo json_encode($data);
+		// exit;
+		$data['main_view']['content']			= 'CoreMember/editBankCoreMember_view';
+
+		$this->load->view('MainPage_view', $data);
+	}
+
+	public function processEditBank(){
+		$auth = $this->session->userdata('auth');
+		$data = array(
+			'member_bank_id'									=> $this->input->post('member_bank_id', true),
+			'member_id'											=> $this->input->post('member_id', true),
+			'bank_account_id'									=> $this->input->post('bank_account_id', true),
+			'bank_account_number'								=> $this->input->post('bank_account_number', true),
+		);
+
+		$this->form_validation->set_rules('member_bank_id', 'bank', 'required');
+		$this->form_validation->set_rules('bank_account_id', 'bank', 'required');
+		$this->form_validation->set_rules('bank_account_number', 'No rek', 'required');
+
+		// echo json_encode($this->form_validation->run()) ;
+		// exit;
+
+		if ($this->form_validation->run() == true) {
+				if ($this->CoreMemberBank_model->updateBank($data)) {
+					
+					$auth = $this->session->userdata('auth');
+					$msg = "<div class='alert alert-success alert-dismissable'>  
+								<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+									Edit Data Bank Sukses
+								</div> ";
+					$this->session->set_userdata('message', $msg);
+					redirect('member/list-bank/'.$this->input->post('member_id', true));
+				} else {
+					$this->session->set_userdata('addacctbank', $data);
+					$msg = "<div class='alert alert-danger alert-dismissable'>
+								<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+									Edit Data Bank gagal
+								</div> ";
+					$this->session->set_userdata('message', $msg);
+					redirect('member/list-bank/'.$this->input->post('member_id', true));
+				}
+		
+		} else {
+			$this->session->set_userdata('addacctbank', $data);
+			$msg = validation_errors("<div class='alert alert-danger alert-dismissable'><button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>", '</div>');
+			$this->session->set_userdata('message', $msg);
+			redirect('member/list-bank/'.$this->input->post('member_id', true));
+		}
+	}
+
+	public function processDeleteBank(){
+		$auth = $this->session->userdata('auth');
+		// $data = array(
+		// 	'segment5' => $this->uri->segment(5),
+		// 	'segment4' => $this->uri->segment(4),
+
+		// );
+		// echo json_encode($data);
+		// exit;
+
+		if ($this->CoreMemberBank_model->deleteBank($this->uri->segment(5))) {
+			$this->fungsi->set_log($auth['user_id'], $auth['username'], '1005', 'Application.CoreMember.processDeleteBank', $auth['user_id'], 'Delete Core Member Bank');
+			$msg = "<div class='alert alert-success alert-dismissable'>                 
+							Hapus Bank Berhasil
+						</div> ";
+			$this->session->set_userdata('message', $msg);
+			redirect('member/list-bank/'.$this->uri->segment(4));
+		} else {
+			$msg = "<div class='alert alert-danger alert-dismissable'>                
+							Hapus Bank Gagal
+						</div> ";
+			$this->session->set_userdata('message', $msg);
+			redirect('member/list-bank/'.$this->uri->segment(4));
 		}
 	}
 

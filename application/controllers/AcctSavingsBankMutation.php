@@ -73,6 +73,17 @@
 			$savings_account_id = $this->uri->segment(3);
 			$unique = $this->session->userdata('unique');
 			$token 	= $this->session->userdata('acctsavingsbankmutationtoken-'.$unique['unique']);
+
+			$savingsaccount = $this->AcctSavingsBankMutation_model->getAcctSavingsAccount_Detail($savings_account_id);
+
+			$member_id = 0;
+
+			if(!empty($savingsaccount)){
+				$member_id = $savingsaccount['member_id'];
+			}
+
+			// echo json_encode($member_id);
+			// exit;
 		
 			if(empty($token)){
 				$token = md5(date('Y-m-d H:i:s'));
@@ -82,7 +93,11 @@
 
 			$data['main_view']['acctsavingsaccount']		= $this->AcctSavingsBankMutation_model->getAcctSavingsAccount_Detail($savings_account_id);
 			
+			$data['main_view']['memberBank']				= create_double($this->AcctSavingsBankMutation_model->getMemberBank($member_id),'member_bank_id', 'bank_account');
+
 			$data['main_view']['memberidentity']			= $this->configuration->MemberIdentity();
+
+			$data['main_view']['member_id']					= $member_id;
 
 			// $data['main_view']['acctsavingsaccount']		= create_double($this->AcctSavingsBankMutation_model->getAcctSavingsAccount(),'savings_account_id', 'savings_account_no');	
 
@@ -90,9 +105,20 @@
 
 			$data['main_view']['acctmutation']				= create_double($this->AcctSavingsBankMutation_model->getAcctMutation(),'mutation_id', 'mutation_name');
 
+			// echo json_encode($data);
+			// exit;
 
 			$data['main_view']['content']					= 'AcctSavingsBankMutation/FormAddAcctSavingsBankMutation_view';
 			$this->load->view('MainPage_view',$data);
+		}
+
+		public function getBankId(){
+			$member_bank_id 	= $this->input->post('member_bank_id');
+
+			// $mutation_id = 2;
+			
+			$memberBankId 			= $this->AcctSavingsBankMutation_model->getBankAccount($member_bank_id);
+			echo json_encode($memberBankId);		
 		}
 
 		// public function getAcctSavingsAccount_Detail(){
@@ -116,6 +142,9 @@
 		// 	echo json_encode($result);		
 		// }
 
+
+
+
 		public function getMutationFunction(){
 			$mutation_id 	= $this->input->post('mutation_id');
 
@@ -136,6 +165,7 @@
 				'savings_id'							=> $this->input->post('savings_id', true),
 				'branch_id'								=> $auth['branch_id'],
 				'bank_account_id'						=> $this->input->post('bank_account_id', true),
+				'member_bank_id'						=> $this->input->post('member_bank_id', true),
 				'savings_bank_mutation_date'			=> date('Y-m-d'),
 				'savings_bank_mutation_opening_balance'	=> $this->input->post('savings_bank_mutation_opening_balance', true),
 				'savings_bank_mutation_last_balance'	=> $this->input->post('savings_bank_mutation_last_balance', true),
@@ -147,6 +177,9 @@
 				'created_id'							=> $auth['user_id'],
 				'created_on'							=> date('Y-m-d H:i:s'),
 			);
+			// 	echo json_encode($data);
+			// exit;
+
 
 			$this->form_validation->set_rules('savings_account_id', 'No. Mutasi', 'required');
 			$this->form_validation->set_rules('bank_account_id', 'Transfer Bank', 'required');
@@ -173,8 +206,8 @@
 								'branch_id'							=> $auth['branch_id'],
 								'journal_voucher_period' 			=> $journal_voucher_period,
 								'journal_voucher_date'				=> date('Y-m-d'),
-								'journal_voucher_title'				=> 'MUTASI BANK '.$acctsavingsbank_last['member_name'],
-								'journal_voucher_description'		=> 'MUTASI BANK '.$acctsavingsbank_last['member_name'],
+								'journal_voucher_title'				=> 'MUTASI BANK '.$acctsavingsbank_last['member_name']." ".$data['savings_bank_mutation_remark'],
+								'journal_voucher_description'		=> 'MUTASI BANK '.$acctsavingsbank_last['member_name']." ".$data['savings_bank_mutation_remark'],
 								'journal_voucher_token'				=> $data['savings_bank_mutation_token'],
 								'transaction_module_id'				=> $transaction_module_id,
 								'transaction_module_code'			=> $transaction_module_code,
@@ -216,7 +249,7 @@
 								$data_credit =array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $account_id,
-									'journal_voucher_description'	=> 'SETORAN VIA BANK '.$acctsavingsbank_last['member_name'],
+									'journal_voucher_description'	=> 'SETORAN VIA BANK '.$acctsavingsbank_last['member_name']." ".$data['savings_bank_mutation_remark'],
 									'journal_voucher_amount'		=> $data['savings_bank_mutation_amount'],
 									'journal_voucher_credit_amount'	=> $data['savings_bank_mutation_amount'],
 									'account_id_default_status'		=> $account_id_default_status,
@@ -231,7 +264,7 @@
 								$data_debet = array (
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $preferencecompany['account_cash_id'],
-									'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+									'journal_voucher_description'	=> $data_journal['journal_voucher_title'].$data['savings_bank_mutation_remark'],
 									'journal_voucher_amount'		=> $data['savings_bank_mutation_amount_adm'],
 									'journal_voucher_debit_amount'	=> $data['savings_bank_mutation_amount_adm'],
 									'account_id_default_status'		=> $account_id_default_status,
@@ -250,7 +283,7 @@
 							$data_credit =array(
 								'journal_voucher_id'			=> $journal_voucher_id,
 								'account_id'					=> $preferencecompany['account_mutation_adm_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+								'journal_voucher_description'	=> $data_journal['journal_voucher_title'].$data['savings_bank_mutation_remark'],
 								'journal_voucher_amount'		=> $data['savings_bank_mutation_amount_adm'],
 								'journal_voucher_credit_amount'	=> $data['savings_bank_mutation_amount_adm'],
 								'account_id_status'				=> 1,
@@ -268,7 +301,7 @@
 								$data_debit =array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $account_id,
-									'journal_voucher_description'	=> 'PENARIKAN VIA BANK '.$acctsavingsbank_last['member_name'],
+									'journal_voucher_description'	=> 'PENARIKAN VIA BANK '.$acctsavingsbank_last['member_name']." ".$data['savings_bank_mutation_remark'],
 									'journal_voucher_amount'		=> $data['savings_bank_mutation_amount'],
 									'journal_voucher_debit_amount'	=> $data['savings_bank_mutation_amount'],
 									'account_id_default_status'		=> $account_id_default_status,

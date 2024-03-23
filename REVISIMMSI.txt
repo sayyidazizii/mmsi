@@ -1,0 +1,53 @@
+persentase Penalty di tambah kode simpanan berjangka di kunci
+
+persentase komisi dan jangka waktu di tambah kode simpanan berjangka
+
+persentase komisi dan jangka waktu di kunci
+
+//bunga
+400.01.01.9  -> 9 bulan
+400.01.01.6  -> 6 bulan
+400.01.01.3  -> 3 bulan
+400.01.01.1  -> 1 bulan
+
+//simpanan
+200.01.01.9  -> 9 bulan
+200.01.01.6  -> 6 bulan
+200.01.01.3  -> 3 bulan
+200.01.01.1  -> 1 bulan
+
+//coa baru untuk penalty
+300.01.5 Pendapatan Penalty Penutupan Simpanan Berjangka
+
+cetak Pdf untuk mutasi tabungan via bank
+
+tambah nomor rekening dan bank di tambah data anggota
+
+
+
+ALTER DATABASE
+------------------------------------------
+
+Tambah Kolom di acct_deposito
+deposito_penalty_percentage
+deposito_commission_agent_percentage
+deposito_commission_supervisor_percentage
+deposito_commission_period
+
+------------------------------------------
+Tambah Kolom di acct_deposito_account
+deposito_account_penalty_percentage
+deposito_account_penalty_amount
+
+hapus kolom
+deposito_account_commission_agent_id
+deposito_account_commission_supervisor_id
+------------------------------------------
+
+buat tabel core_member_bank
+
+------------------------------------------
+hapus menu konfigurasi komisi
+------------------------------------------
+tambah kolom member_bank_id di savings-bank-mutation
+
