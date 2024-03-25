@@ -310,6 +310,24 @@ class AcctDepositoAccount_model extends CI_Model
 		return $result['deposito_commission_period'];
 	}
 
+	//KOMISI agentnext
+	public function getCommisionAgentNext($deposito_id){
+		$this->db->select('deposito_commission_agent_percentage_next');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_commission_agent_percentage_next'];
+	}
+
+	//KOMISI spvNext
+	public function getCommisionSpvNext($deposito_id){
+		$this->db->select('deposito_commission_supervisor_percentage_next');
+		$this->db->from('acct_deposito');
+		$this->db->where('deposito_id', $deposito_id);
+		$result = $this->db->get()->row_array();
+		return $result['deposito_commission_supervisor_percentage_next'];
+	}
+
 
 	public function getSavingsAccountAgent($deposito_account_id){
 		$this->db->select('savings_account_id_agent');
@@ -703,7 +721,7 @@ class AcctDepositoAccount_model extends CI_Model
 	}
 
 	public function getAcctDepositoAccount_Detail($deposito_account_id){
-		$this->db->select('acct_deposito_account.deposito_account_id, acct_deposito_account.member_id, core_member.member_name, core_member.member_no, core_member.member_gender, core_member.member_address, core_member.member_phone, core_member.member_date_of_birth, core_member.member_identity_no, core_member.city_id, core_member.kecamatan_id, core_member.identity_id, core_member.member_job, acct_deposito_account.deposito_id, acct_deposito.deposito_code, acct_deposito.deposito_name, acct_deposito.deposito_interest_rate, acct_deposito_account.deposito_account_no, acct_deposito_account.deposito_account_serial_no, acct_deposito_account.deposito_account_date, acct_deposito_account.deposito_account_amount, acct_deposito_account.deposito_account_period, acct_deposito_account.deposito_account_due_date, acct_deposito_account.voided_remark, acct_deposito_account.savings_account_id, acct_deposito_account.office_id, acct_deposito_account.deposito_account_nisbah, acct_deposito_account.validation, acct_deposito_account.validation_id, acct_deposito_account.validation_on, acct_deposito_account.office_id, acct_deposito_account.deposito_account_blockir_type, acct_deposito_account.deposito_account_blockir_status, acct_deposito_account.deposito_account_unique_code, acct_deposito_account.deposito_account_condition,acct_deposito_account.deposito_account_penalty_percentage,acct_deposito_account.deposito_account_penalty_amount');
+		$this->db->select('acct_deposito_account.deposito_account_id, acct_deposito_account.member_id, core_member.member_name, core_member.member_no, core_member.member_gender, core_member.member_address, core_member.member_phone, core_member.member_date_of_birth, core_member.member_identity_no, core_member.city_id, core_member.kecamatan_id, core_member.identity_id, core_member.member_job, acct_deposito_account.deposito_id, acct_deposito.deposito_code, acct_deposito.deposito_name, acct_deposito.deposito_interest_rate, acct_deposito_account.deposito_account_no, acct_deposito_account.deposito_account_serial_no, acct_deposito_account.deposito_account_date, acct_deposito_account.deposito_account_amount, acct_deposito_account.deposito_account_period, acct_deposito_account.deposito_account_due_date, acct_deposito_account.voided_remark, acct_deposito_account.savings_account_id, acct_deposito_account.office_id, acct_deposito_account.deposito_account_nisbah, acct_deposito_account.validation, acct_deposito_account.validation_id, acct_deposito_account.validation_on, acct_deposito_account.office_id, acct_deposito_account.deposito_account_blockir_type, acct_deposito_account.deposito_account_blockir_status, acct_deposito_account.deposito_account_unique_code, acct_deposito_account.deposito_account_condition,acct_deposito_account.deposito_account_penalty_percentage');
 		$this->db->from('acct_deposito_account');
 		$this->db->join('core_member', 'acct_deposito_account.member_id = core_member.member_id');
 		// $this->db->join('acct_savings_account', 'acct_deposito_account.savings_account_id = acct_savings_account.savings_account_id');

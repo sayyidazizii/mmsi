@@ -401,16 +401,18 @@ class AcctDepositoAccount extends CI_Controller{
 		$deposito_id 	= $this->input->post('deposito_id');
 		$branchcode 	= $this->AcctDepositoAccount_model->getBranchCode($auth['branch_id']);
 
-		$depositocode 				= $this->AcctDepositoAccount_model->getDepositoCode($deposito_id);
-		$depositoperiod 			= $this->AcctDepositoAccount_model->getDepositoPeriod($deposito_id);
-		$depositointerestperiod 	= $this->AcctDepositoAccount_model->getDepositoInterestPeriod($deposito_id);
-		$depositonisbah 			= $this->AcctDepositoAccount_model->getDepositoNisbah($deposito_id);
-		$lastdepositoaccountno 		= $this->AcctDepositoAccount_model->getLastAccountDepositoNo($auth['branch_id'], $deposito_id);
+		$depositocode 					= $this->AcctDepositoAccount_model->getDepositoCode($deposito_id);
+		$depositoperiod 				= $this->AcctDepositoAccount_model->getDepositoPeriod($deposito_id);
+		$depositointerestperiod 		= $this->AcctDepositoAccount_model->getDepositoInterestPeriod($deposito_id);
+		$depositonisbah 				= $this->AcctDepositoAccount_model->getDepositoNisbah($deposito_id);
+		$lastdepositoaccountno 			= $this->AcctDepositoAccount_model->getLastAccountDepositoNo($auth['branch_id'], $deposito_id);
 
-		$depositpenalty 			= $this->AcctDepositoAccount_model->getPenalty($deposito_id);
-		$depositoCommisionAgent 	= $this->AcctDepositoAccount_model->getCommisionAgent($deposito_id);
-		$depositoCommisionSpv 		= $this->AcctDepositoAccount_model->getCommisionSpv($deposito_id);
-		$depositoCommisionPeriod 	= $this->AcctDepositoAccount_model->getCommisionPeriod($deposito_id);
+		$depositpenalty 				= $this->AcctDepositoAccount_model->getPenalty($deposito_id);
+		$depositoCommisionAgent 		= $this->AcctDepositoAccount_model->getCommisionAgent($deposito_id);
+		$depositoCommisionSpv 			= $this->AcctDepositoAccount_model->getCommisionSpv($deposito_id);
+		$depositoCommisionPeriod 		= $this->AcctDepositoAccount_model->getCommisionPeriod($deposito_id);
+		$depositoCommisionAgentNext 	= $this->AcctDepositoAccount_model->getCommisionAgentNext($deposito_id);
+		$depositoCommisionSpvNext 		= $this->AcctDepositoAccount_model->getCommisionSpvNext($deposito_id);
 
 
 		if ($lastdepositoaccountno->num_rows() <> 0) {
@@ -446,17 +448,19 @@ class AcctDepositoAccount extends CI_Controller{
 
 		// $result = array();
 		$result = array(
-			'deposito_period'							=> $depositoperiod,
-			'deposito_interest_period'					=> $depositointerestperiod,
-			'deposito_interest_period_view'				=> $depositointerestperiod_view,
-			'deposito_account_no'						=> $new_deposito_account_no,
-			'deposito_account_serial_no'				=> $new_deposito_account_serial,
-			'deposito_account_due_date'					=> $deposito_due_date,
-			'deposito_account_nisbah'					=> $depositonisbah,
-			'deposit_penalty'							=> $depositpenalty,
-			'deposito_commission_agent_percentage'		=> $depositoCommisionAgent,
-			'deposito_commission_supervisor_percentage'	=> $depositoCommisionSpv,
-			'deposito_commision_period'				 	=> $depositoCommisionPeriod,
+			'deposito_period'									=> $depositoperiod,
+			'deposito_interest_period'							=> $depositointerestperiod,
+			'deposito_interest_period_view'						=> $depositointerestperiod_view,
+			'deposito_account_no'								=> $new_deposito_account_no,
+			'deposito_account_serial_no'						=> $new_deposito_account_serial,
+			'deposito_account_due_date'							=> $deposito_due_date,
+			'deposito_account_nisbah'							=> $depositonisbah,
+			'deposit_penalty'									=> $depositpenalty,
+			'deposito_commission_agent_percentage'				=> $depositoCommisionAgent,
+			'deposito_commission_supervisor_percentage'			=> $depositoCommisionSpv,
+			'deposito_commision_period'				 			=> $depositoCommisionPeriod,
+			'deposito_commission_agent_percentage_next'			=> $depositoCommisionAgentNext,
+			'deposito_commission_supervisor_percentage_next'	=> $depositoCommisionSpvNext,
 		);
 
 
@@ -529,7 +533,8 @@ class AcctDepositoAccount extends CI_Controller{
 			'deposito_account_commission_period'				=> $this->input->post('commision_agent_period', true),
 			'deposito_account_commission_supervisor_percentage'	=> $this->input->post('commision_supervisor_percentage', true),
 			'deposito_account_penalty_percentage'				=> $this->input->post('deposito_account_penalty_percentage', true),
-			'deposito_account_penalty_amount'					=> $this->input->post('deposito_account_penalty_amount', true),
+			'deposito_account_commission_disbursed_agent_next'	=> $this->input->post('deposito_account_commission_disbursed_agent_next', true),
+			'deposito_account_commission_disbursed_supervisor_next'	=> $this->input->post('deposito_account_commission_disbursed_supervisor_next', true),
 		);
 
 		// echo json_encode($data);
@@ -546,6 +551,7 @@ class AcctDepositoAccount extends CI_Controller{
 		// $this->form_validation->set_rules('deposito_account_commission_disbursed_supervisor', 'Komisi Supervisor Cair', 'required');
 		$this->form_validation->set_rules('deposito_account_commission_on_hold_supervisor', 'Komisi Supervisor Ditahan', 'required');
 		$this->form_validation->set_rules('deposito_account_buffer', 'Buffer', 'required');
+		$this->form_validation->set_rules('deposito_account_commission_disbursed_agent_next', 'Komisi Agent Cair Next', 'required');
 
 		$transaction_module_code 	= "DEP";
 		$transaction_module_id 		= $this->AcctDepositoAccount_model->getTransactionModuleID($transaction_module_code);
@@ -778,7 +784,7 @@ class AcctDepositoAccount extends CI_Controller{
 
 		if ($this->AcctDepositoAccount_model->validationAcctDepositoAccount($data)) {
 			$day 	= date('d', strtotime($acctdepositoaccount['deposito_account_date']));
-			$month 	= date('m', strtotime($acctdepositoaccount['deposito_account_date'])) - 1;
+			$month 	= date('m', strtotime($acctdepositoaccount['deposito_account_date']));
 			$year 	= date('Y', strtotime($acctdepositoaccount['deposito_account_date']));
 			$date 	= date('Y-m-d', strtotime($acctdepositoaccount['deposito_account_date']));
 
@@ -852,7 +858,7 @@ class AcctDepositoAccount extends CI_Controller{
 				}
 			}
 			if ($acctdepositoaccount['deposito_account_interest_period'] == 2) {
-				//custom by jangka waktu
+				//custom by Period
 				$period_commisison = 0;
 				if(!empty($acctdepositoaccount['deposito_account_commission_period'])){
 					$period_commisison = $acctdepositoaccount['deposito_account_commission_period'];
@@ -860,9 +866,50 @@ class AcctDepositoAccount extends CI_Controller{
 					$period_commisison = $acctdepositoaccount['deposito_account_period'];
 				}
 
-				for ($i = 1; $i <= $period_commisison ; $i++) {
-					// $date = date("Y-m-d", strtotime(" +1 month", strtotime($date)));
-					// $date 	= $this->endCycle($date, 1);
+//--------------First Commision
+				$month1 	= date('m', strtotime($acctdepositoaccount['deposito_account_date'])) - 1;
+
+				$month1 = $month1 + 1;
+					if ($month1 == 13) {
+						$month1 = 01;
+						$year = $year + 1;
+					}
+
+					$commission_date = '';
+					$check_date = $year . '-' . $month1 . '-' . "01";
+					$lastday = date("t", strtotime($check_date));
+					if ($day > $lastday) {
+						$commission_date = $year . '-' . $month1 . '-' . $lastday;
+					} else {
+						$commission_date = $year . '-' . $month1 . '-' . $day;
+					}
+
+					$data_interest_period = array(
+						'deposito_account_id'						=> $deposito_account_id,
+						'branch_id'									=> $acctdepositoaccount['branch_id'],
+						'deposito_id'								=> $acctdepositoaccount['deposito_id'],
+						'savings_account_id'						=> $acctdepositoaccount['savings_account_id'],
+						'office_id'									=> $acctdepositoaccount['office_id'],
+						'commission_date'							=> $commission_date,
+						'commission_due_date'						=> $acctdepositoaccount['deposito_account_due_date'],
+						'deposito_account_last_balance'				=> $acctdepositoaccount['deposito_account_amount'],
+						'commission_on_hold_agent'					=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'],
+						'commission_disbursed_agent' 				=> $acctdepositoaccount['deposito_account_commission_disbursed_agent'],
+						'commission_on_hold_supervisor'				=> $acctdepositoaccount['deposito_account_commission_on_hold_supervisor'],
+						// 'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'], //update 
+						'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_disbursed_supervisor'],  
+						'created_id'								=> $auth['user_id'],
+						'created_on'								=> date('Y-m-d H:i:s'),
+					);
+					// print_r($data_interest_period); exit;
+
+					$this->AcctDepositoAccount_model->insertAcctCommission($data_interest_period);
+
+//-------------- End First Commision
+
+
+//-------------- Next Commision
+				for ($i = 1; $i <= $period_commisison - 1; $i++) {
 					$month = $month + 1;
 					if ($month == 13) {
 						$month = 01;
@@ -888,10 +935,10 @@ class AcctDepositoAccount extends CI_Controller{
 						'commission_due_date'						=> $acctdepositoaccount['deposito_account_due_date'],
 						'deposito_account_last_balance'				=> $acctdepositoaccount['deposito_account_amount'],
 						'commission_on_hold_agent'					=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'],
-						'commission_disbursed_agent' 				=> $acctdepositoaccount['deposito_account_commission_disbursed_agent'],
+						'commission_disbursed_agent' 				=> $acctdepositoaccount['deposito_account_commission_disbursed_agent_next'],
 						'commission_on_hold_supervisor'				=> $acctdepositoaccount['deposito_account_commission_on_hold_supervisor'],
 						// 'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_on_hold_agent'], //update 
-						'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_disbursed_supervisor'],  
+						'commission_disbursed_supervisor' 			=> $acctdepositoaccount['deposito_account_commission_disbursed_supervisor_next'],  
 						'created_id'								=> $auth['user_id'],
 						'created_on'								=> date('Y-m-d H:i:s'),
 					);
@@ -899,6 +946,8 @@ class AcctDepositoAccount extends CI_Controller{
 
 					$this->AcctDepositoAccount_model->insertAcctCommission($data_interest_period);
 				}
+//-------------- End Next Commision
+
 			}
 			if ($acctdepositoaccount['deposito_account_interest_period'] == 3) {
 				for ($i = 0; $i <= $acctdepositoaccount['deposito_account_period']; $i++) {
@@ -2369,7 +2418,7 @@ class AcctDepositoAccount extends CI_Controller{
 
 		$data = array(
 			'deposito_account_id'				=> $this->input->post('deposito_account_id', true),
-			'deposito_account_penalty'			=> $this->input->post('deposito_account_penalty', true),
+			'deposito_account_penalty'			=> $this->input->post('deposito_account_penalty_amount', true),
 			'deposito_account_closed_date'		=> date('Y-m-d'),
 			'deposito_account_status'			=> 1,
 			'savings_account_id'				=> $this->input->post('savings_account_id', true),
@@ -2592,6 +2641,38 @@ class AcctDepositoAccount extends CI_Controller{
 								'created_id' 					=> $auth['user_id']
 							);
 
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+						}
+						//penalty
+						if($data['deposito_account_penalty'] > 0){
+							$data_debet = array (
+								'journal_voucher_id'			=> $journal_voucher_id,
+								'account_id'					=> $preferencecompany['account_cash_id'],
+								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+								'journal_voucher_amount'		=> $data['deposito_account_penalty'],
+								'journal_voucher_debit_amount'	=> $data['deposito_account_penalty'],
+								'account_id_default_status'		=> $account_id_default_status,
+								'account_id_status'				=> 0,
+								'journal_voucher_item_token'	=> 'STRP1'.$data['deposito_account_closed_token'].$data['deposito_account_penalty'],
+								'created_id' 					=> $auth['user_id']
+							);
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+
+							$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
+
+							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_penalty_id']);
+
+							$data_credit =array(
+								'journal_voucher_id'			=> $journal_voucher_id,
+								'account_id'					=> $preferencecompany['account_penalty_id'],
+								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+								'journal_voucher_amount'		=> $data['deposito_account_penalty'],
+								'journal_voucher_credit_amount'	=> $data['deposito_account_penalty'],
+								'account_id_default_status'		=> $account_id_default_status,
+								'account_id_status'				=> 1,
+								'journal_voucher_item_token'	=> 'STRP2'.$data['deposito_account_closed_token'].$preferencecompany['account_penalty_id'],
+								'created_id' 					=> $auth['user_id']
+							);
 							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
 						}
 					}

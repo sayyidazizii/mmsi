@@ -73,8 +73,10 @@
 									<th width="15%">Ketersediaan</th>
 									<th width="15%">Poin</th>
 									<th width="15%">Penalty</th>
-									<th width="15%">Persentase komisi Agent</th>
-									<th width="15%">Persentase komisi Supervisor</th>
+									<th width="15%">Komisi Agent Cair</th>
+									<th width="15%">Komisi Supervisor Cair</th>
+									<th width="15%">Komisi Agent Berikutnya</th>
+									<th width="15%">Komisi Supervisor Berikutnya</th>
 									<th width="15%">Jangka Waktu Komisi</th>
 									<th width="10%">Action</th>
 								</tr>
@@ -98,14 +100,16 @@
 												<td>" . $val['deposito_name'] . "</td>
 												<td>" . $val['account_code'] . " - " . $val['account_name'] . "</td>
 												<td>" . $this->AcctDeposito_model->getAccountCode($val['account_basil_id']) . " - " . $this->AcctDeposito_model->getAccountName($val['account_basil_id']) . "</td>
-												<td>" . $val['deposito_interest_rate'] . "</td>
+												<td>" . $val['deposito_interest_rate'] . " %</td>
 												<td>" . $val['deposito_period'] . "</td>
 												<td>" . $period[$val['deposito_interest_period']] . "</td>
 												<td>" . $val['deposito_availability'] . "</td>
 												<td>" . $val['deposito_point'] . "</td>
-												<td>" . $val['deposito_penalty_percentage'] . "</td>
-												<td>" . $val['deposito_commission_agent_percentage'] . "</td>
-												<td>" . $val['deposito_commission_supervisor_percentage'] . "</td>
+												<td>" . $val['deposito_penalty_percentage'] . " %</td>
+												<td>" . $val['deposito_commission_agent_percentage'] . " %</td>
+												<td>" . $val['deposito_commission_supervisor_percentage'] . " %</td>
+												<td>" . $val['deposito_commission_agent_percentage_next'] . " %</td>
+												<td>" . $val['deposito_commission_supervisor_percentage_next'] . " %</td>
 												<td>" . $val['deposito_commission_period'] . "</td>
 												<td>
 													<a href='" . $this->config->item('base_url') . 'deposito/edit/' . $val['deposito_id'] . "' class='btn default btn-xs purple'>

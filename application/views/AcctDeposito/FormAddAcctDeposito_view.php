@@ -297,13 +297,13 @@ $this->session->unset_userdata('message');
 							<div class="col-md-6">
 								<div class="form-group form-md-line-input">
 									<input type="text" class="form-control" name="deposito_commission_agent_percentage" id="deposito_commission_agent_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_agent_percentage', $data['deposito_commission_agent_percentage']); ?>" onChange="function_elements_add(this.name, this.value);" />
-									<label class="control-label">Persentase Komisi Agent<span class="required">*</span></label>
+									<label class="control-label">Persentase Komisi Agent Cair<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
 								<div class="form-group form-md-line-input">
 									<input type="text" class="form-control" name="deposito_commission_supervisor_percentage" id="deposito_commission_supervisor_percentage" autocomplete="off" value="<?php echo set_value('deposito_commission_supervisor_percentage', $data['deposito_commission_supervisor_percentage']); ?>" onChange="function_elements_add(this.name, this.value);"/>
-									<label class="control-label">Persentase Komisi Supervisor<span class="required">*</span></label>
+									<label class="control-label">Persentase Komisi Supervisor Cair<span class="required">*</span></label>
 								</div>
 							</div>
 							<div class="col-md-3">
@@ -312,10 +312,27 @@ $this->session->unset_userdata('message');
 									<label class="control-label">Jangka Waktu Komisi<span class="required">*</span></label>
 								</div>
 							</div>
+							<div class="col-md-6">
+								<div class="form-group form-md-line-input">
+									<input type="text" class="form-control" name="deposito_commission_agent_percentage_next" id="deposito_commission_agent_percentage_next" autocomplete="off" value="<?php echo set_value('deposito_commission_agent_percentage_next', $data['deposito_commission_agent_percentage_next']); ?>" onChange="function_elements_add(this.name, this.value);" />
+									<label class="control-label">Persentase Komisi Agent Next<span class="required">*</span></label>
+								</div>
+							</div>
+							<div class="col-md-3">
+								<div class="form-group form-md-line-input">
+									<input type="text" class="form-control" name="deposito_commission_supervisor_percentage_next" id="deposito_commission_supervisor_percentage_next" autocomplete="off" value="<?php echo set_value('deposito_commission_supervisor_percentage_next', $data['deposito_commission_supervisor_percentage_next']); ?>" onChange="function_elements_add(this.name, this.value);"/>
+									<label class="control-label">Persentase Komisi Supervisor Next<span class="required">*</span></label>
+								</div>
+							</div>							
 						</div>
 
-
 						<div class="row">
+							<div class="col" style="padding-top: 10px; text-align:left;">
+								<div class='alert alert-danger alert-dismissable'>
+								<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+								" Persentase Komisi Next  =  ( Total Persen Komisi - Persen Komisi Cair ) / Jangka Waktu Komisi "
+								</div> 
+							</div>
 							<div class="col-md-12" style="padding-top: 10px; text-align:right;">
 								<button type="reset" name="Reset" value="Reset" class="btn btn-danger" onClick="reset_data();"><i class="fa fa-times"> Batal</i></button>
 								<button type="submit" name="Save" value="Save" id="Save" class="btn green-jungle" title="Simpan Data"><i class="fa fa-check"> Simpan</i></button>

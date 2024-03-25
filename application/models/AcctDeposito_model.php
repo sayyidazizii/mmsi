@@ -63,7 +63,8 @@
 		
 		public function getAcctDeposito_Detail($deposito_id){
 			$this->db->select('acct_deposito.deposito_id, acct_deposito.deposito_code, acct_deposito.deposito_name, acct_deposito.account_id, acct_account.account_code, acct_account.account_name, acct_deposito.account_basil_id, acct_deposito.deposito_period, acct_deposito.deposito_interest_rate, acct_deposito.deposito_interest_period, acct_deposito.deposito_availability, acct_deposito.deposito_point,acct_deposito.deposito_penalty_percentage,
-			acct_deposito.deposito_commission_agent_percentage,acct_deposito.deposito_commission_supervisor_percentage,acct_deposito.deposito_commission_period');
+			acct_deposito.deposito_commission_agent_percentage,acct_deposito.deposito_commission_supervisor_percentage,acct_deposito.deposito_commission_period,
+			acct_deposito.deposito_commission_agent_percentage_next,acct_deposito.deposito_commission_supervisor_percentage_next');
 			$this->db->from('acct_deposito');
 			$this->db->join('acct_account', 'acct_deposito.account_id = acct_account.account_id');
 			$this->db->where('acct_deposito.deposito_id', $deposito_id);
