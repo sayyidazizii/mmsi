@@ -197,6 +197,8 @@ $route['savings-bank-mutation/process-void']                = 'AcctSavingsBankMu
 $route['savings-bank-mutation/add/(:num)']                  = 'AcctSavingsBankMutation/addAcctSavingsBankMutation/$1';
 $route['savings-bank-mutation/filter']                      = 'AcctSavingsBankMutation/filter';
 $route['savings-bank-mutation/get-bank-account']            = 'AcctSavingsBankMutation/getBankId';
+$route['savings-bank-mutation/print-note/(:num)']           = 'AcctSavingsBankMutation/printNoteAcctSavingsBankMutation/$1';
+
 
 
 //ACCT DEPOSITO PROFIT SHARING CHECK

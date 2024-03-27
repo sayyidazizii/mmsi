@@ -256,5 +256,22 @@
 				return false;
 			}
 		}
+
+		public function getAcctSavingsBankMutation_id($savings_bank_mutation_id){
+			$this->db->select('*');
+			$this->db->from('acct_savings_bank_mutation');
+			$this->db->join('acct_bank_account', 'acct_savings_bank_mutation.bank_account_id = acct_bank_account.bank_account_id');
+			// $this->db->join('acct_account', 'acct_bank_account.account_id = acct_account.account_id');
+			$this->db->join('acct_savings_account', 'acct_savings_bank_mutation.savings_account_id = acct_savings_account.savings_account_id');
+			$this->db->join('core_member', 'acct_savings_bank_mutation.member_id = core_member.member_id');
+			$this->db->join('core_member_bank', 'acct_savings_bank_mutation.member_bank_id = core_member_bank.member_bank_id');
+			// $this->db->join('core_city', 'core_member.city_id = core_city.city_id');
+			// $this->db->join('core_kecamatan', 'core_member.kecamatan_id = core_kecamatan.kecamatan_id');
+			// $this->db->join('core_identity', 'core_member.identity_id = core_identity.identity_id');
+			// $this->db->join('acct_savings', 'acct_savings_account.savings_id = acct_savings.savings_id');
+			$this->db->where('acct_savings_bank_mutation.data_state', 0);
+			$this->db->where('acct_savings_bank_mutation.savings_bank_mutation_id', $savings_bank_mutation_id);
+			return $this->db->get()->row_array();
+		}
 	}
 ?>

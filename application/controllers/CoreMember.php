@@ -9,7 +9,7 @@ class CoreMember extends CI_Controller{
 		$this->load->model('Library_model');
 		$this->load->model('CoreBranch_model');
 		$this->load->model('CoreMemberBank_model');
-		$this->load->model('AcctbankAccount_model');
+		$this->load->model('AcctBankAccount_model');
 		$this->load->helper('sistem');
 		$this->load->helper('url');
 		$this->load->database('default');
@@ -3944,7 +3944,7 @@ class CoreMember extends CI_Controller{
 	public function addBankCoreMember($member_id){
 		$member_id 	= $this->uri->segment(4);
 		$data['main_view']['member_id']			= $member_id;
-		$data['main_view']['acctbank']			= create_double($this->AcctbankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
+		$data['main_view']['acctbank']			= create_double($this->AcctBankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
 		// echo json_encode($data);
 		// exit;
 		$data['main_view']['content']			= 'CoreMember/addBankCoreMember_view';
@@ -4002,7 +4002,7 @@ class CoreMember extends CI_Controller{
 	public function editBankCoreMember($member_bank_id){
 		$member_id 	= $this->uri->segment(4);
 		$data['main_view']['member_bank_id']	= $member_bank_id;
-		$data['main_view']['acctbank']			= create_double($this->AcctbankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
+		$data['main_view']['acctbank']			= create_double($this->AcctBankAccount_model->getDataAcctBankAccount(), 'bank_account_id', 'bank_account_name');
 		$data['main_view']['member_bank']		= $this->CoreMemberBank_model->getAcctBankAccount_Detail($member_bank_id);
 		// echo json_encode($data);
 		// exit;

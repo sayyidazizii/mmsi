@@ -775,9 +775,167 @@
 			$sessions	= $this->session->unset_userdata('addacctsavingsbankmutation-'.$unique['unique']);
 			redirect('savings-bank-mutation/add');
 		}
+
 		public function reset_search(){
 			$this->session->unset_userdata('filter-acctsavingsbankmutation');
 			redirect('savings-bank-mutation');
+		}
+
+		public function printNoteAcctSavingsBankMutation(){
+			$auth = $this->session->userdata('auth');
+			$savings_bank_mutation_id 	= $this->uri->segment(3);
+			$preferencecompany 			= $this->AcctSavingsBankMutation_model->getPreferenceCompany();
+			$acctsavingsbankmutation	= $this->AcctSavingsBankMutation_model->getAcctSavingsBankMutation_id($savings_bank_mutation_id);
+
+			// echo json_encode($acctsavingsbankmutation);
+			// exit;
+
+			require_once('tcpdf/config/tcpdf_config.php');
+			require_once('tcpdf/tcpdf.php');
+			// create new PDF document
+			$pdf = new TCPDF('P', PDF_UNIT, 'F4', true, 'UTF-8', false);
+
+			// set document information
+			/*$pdf->SetCreator(PDF_CREATOR);
+			$pdf->SetAuthor('');
+			$pdf->SetTitle('');
+			$pdf->SetSubject('');
+			$pdf->SetKeywords('TCPDF, PDF, example, test, guide');*/
+
+			// set default header data
+			/*$pdf->SetHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_TITLE);
+			$pdf->SetSubHeaderData(PDF_HEADER_LOGO, PDF_HEADER_LOGO_WIDTH, PDF_HEADER_STRING);*/
+
+			// set header and footer fonts
+			/*$pdf->setHeaderFont(Array(PDF_FONT_NAME_MAIN, '', PDF_FONT_SIZE_MAIN));
+			$pdf->setFooterFont(Array(PDF_FONT_NAME_DATA, '', PDF_FONT_SIZE_DATA));*/
+
+			// set default monospaced font
+			/*$pdf->SetDefaultMonospacedFont(PDF_FONT_MONOSPACED);*/
+
+			// set margins
+			/*$pdf->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);*/
+
+			$pdf->SetPrintHeader(false);
+			$pdf->SetPrintFooter(false);
+
+			$pdf->SetMargins(7, 7, 7, 7); // put space of 10 on top
+			/*$pdf->SetHeaderMargin(PDF_MARGIN_HEADER);*/
+			/*$pdf->SetFooterMargin(PDF_MARGIN_FOOTER);*/
+
+			// set auto page breaks
+			/*$pdf->SetAutoPageBreak(TRUE, PDF_MARGIN_BOTTOM);*/
+
+			// set image scale factor
+			$pdf->setImageScale(PDF_IMAGE_SCALE_RATIO);
+
+			// set some language-dependent strings (optional)
+			if (@file_exists(dirname(__FILE__).'/lang/eng.php')) {
+			    require_once(dirname(__FILE__).'/lang/eng.php');
+			    $pdf->setLanguageArray($l);
+			}
+
+			// ---------------------------------------------------------
+
+			// set font
+			$pdf->SetFont('helvetica', 'B', 20);
+
+			// add a page
+			$pdf->AddPage();
+
+			/*$pdf->Write(0, 'Example of HTML tables', '', 0, 'L', true, 0, false, false, 0);*/
+
+			$pdf->SetFont('helvetica', '', 12);
+
+			// -----------------------------------------------------------------------------
+
+			$base_url = base_url();
+			$img = "<img src=\"".$base_url."assets/layouts/layout/img/".$preferencecompany['logo_koperasi']."\" alt=\"\" width=\"500%\" height=\"500%\"/>";
+
+			$tbl = "
+			<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\">
+			    <tr>
+			    	<td rowspan=\"2\" width=\"13%\">".$img."</td>
+			        <td width=\"40%\"><div style=\"text-align: left; font-size:14px\"><br>BUKTI TRANSFER TABUNGAN VIA BANK</div></td>
+			    </tr>
+			    <tr>
+			        <td width=\"40%\"><div style=\"text-align: left; font-size:14px\">Jam : ".date('H:i:s')."</div></td>
+			    </tr>
+			</table>";
+
+			$pdf->writeHTML($tbl, true, false, false, false, '');
+			
+
+			$tbl1 = "
+			Penarikan Tabungan Oleh :
+			<br>
+			<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">
+			    <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">Nama</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: ".$acctsavingsbankmutation['member_name']."</div></td>
+			    </tr>
+			    <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">No. Rekening</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: ".$acctsavingsbankmutation['savings_account_no']."</div></td>
+			    </tr>
+				<tr>
+				<td width=\"20%\"><div style=\"text-align: left;\">Tranfers Ke </div></td>
+					<td width=\"80%\"><div style=\"text-align: left;\">: ".$acctsavingsbankmutation['bank_account_name']."-".$acctsavingsbankmutation['bank_account_number']."</div></td>
+				</tr>
+			    <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">Alamat</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: ".$acctsavingsbankmutation['member_address']."</div></td>
+			    </tr>
+			    <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">Terbilang</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: ".numtotxt($acctsavingsbankmutation['savings_bank_mutation_amount'])."</div></td>
+			    </tr>
+			    <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">Keperluan</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: PENARIKAN TABUNGAN KE REKENING PRIBADI</div></td>
+			    </tr>
+			     <tr>
+			        <td width=\"20%\"><div style=\"text-align: left;\">Jumlah</div></td>
+			        <td width=\"80%\"><div style=\"text-align: left;\">: Rp. &nbsp;".number_format($acctsavingsbankmutation['savings_bank_mutation_amount'], 2)."</div></td>
+			    </tr>				
+			</table>";
+
+			$tbl2 = "
+			<table cellspacing=\"0\" cellpadding=\"1\" border=\"0\" width=\"100%\">
+			    <tr>
+				<br>
+			    	<td width=\"30%\"><div style=\"text-align: center;\"></div></td>
+			        <td width=\"20%\"><div style=\"text-align: center;\"></div></td>
+			        <td width=\"30%\"><div style=\"text-align: center;\">".$this->AcctSavingsAccount_model->getBranchCity($auth['branch_id']).", ".date('d-m-Y')."</div></td>
+			    </tr>
+			    <tr>
+			        <td width=\"30%\"><div style=\"text-align: center;\"></div></td>
+			        <td width=\"20%\"><div style=\"text-align: center;\"></div></td>
+			        <td width=\"30%\"><div style=\"text-align: center;\">Teller/Kasir</div></td>
+			    </tr>		
+			</table>";
+
+			$pdf->writeHTML($tbl1.$tbl2, true, false, false, false, '');
+
+
+			ob_clean();
+
+			// -----------------------------------------------------------------------------
+			$js = '';
+			//Close and output PDF document
+			$filename = 'Kwitansi.pdf';
+
+			// force print dialog
+			$js .= 'print(true);';
+
+			// set javascript
+			$pdf->IncludeJS($js);
+			
+			$pdf->Output($filename, 'I');
+
+			//============================================================+
+			// END OF FILE
+			//============================================================+
 		}
 		
 	}

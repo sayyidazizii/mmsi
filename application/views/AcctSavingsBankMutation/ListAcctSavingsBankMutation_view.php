@@ -173,7 +173,7 @@
 											<td>".tgltoview($val['savings_bank_mutation_date'])."</td>
 											<td>".$val['account_code']." - ".$val['bank_account_name']."</td>
 											<td>".number_format($val['savings_bank_mutation_amount'])."</td>
-											<td><a href='".base_url()."savings-bank-mutation/print/".$val['savings_bank_mutation_id']."' class='btn default btn-xs green'><i class='fa fa-print'></i> cetak </a></td>
+											<td><a href='".base_url()."savings-bank-mutation/print-note/".$val['savings_bank_mutation_id']."' class='btn default btn-xs green'><i class='fa fa-print'></i> cetak </a></td>
 										</tr>
 									";
 									$no++;

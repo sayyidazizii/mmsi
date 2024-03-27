@@ -2425,319 +2425,80 @@ class AcctDepositoAccount extends CI_Controller{
 			'deposito_account_closed_token'		=> $this->input->post('deposito_account_closed_token', true),
 		);
 
-		$amount_administration =  $this->input->post('deposito_account_amount_adm', true);
+		$savingsaccountid = $this->input->post('savings_account_id', true);
 
-		$data_savings = array(
-			'savings_id'						=> $this->input->post('savings_id', true),
-			'member_id'							=> $this->input->post('member_id_savings', true),
-			'savings_account_opening_balance'	=> $this->input->post('savings_account_last_balance', true),
-			'savings_account_last_balance'		=> $this->input->post('savings_account_last_balance', true) + $this->input->post('deposito_account_amount', true),
-		);
+		// echo json_encode($savingsaccountid);
+		// exit;
 
-		$acctdepositoaccount 		   = $this->AcctDepositoAccount_model->getAcctDepositoAccountDetail($data['deposito_account_id']);
-		$interest_amount		 	   = $this->input->post('interest_amount', true);
-		$tax_amount					   = $this->input->post('tax_amount', true);
-		$total_amount				   = $this->input->post('deposito_account_amount', true);
-
-		$deposito_account_closed_token = $this->AcctDepositoAccount_model->getDepositoAccountClosedToken($data['deposito_account_closed_token']);
-
-		if ($deposito_account_closed_token->num_rows() == 0) {
-			if ($this->AcctDepositoAccount_model->closedAcctDepositoAccountExtra($data)) {
-				$data_transfer = array(
-					'branch_id'							=> $auth['branch_id'],
-					'savings_transfer_mutation_date'	=> date('Y-m-d'),
-					'savings_transfer_mutation_amount'	=> $total_amount + $interest_amount,
-					'operated_name'						=> 'SYS',
-					'savings_transfer_mutation_token'	=> $data['deposito_account_closed_token'],
-					'created_id'						=> $auth['user_id'],
-					'created_on'						=> date('Y-m-d H:i:s'),
-				);
-
-				if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_transfer)) {
-					$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_transfer['created_on']);
-
-					$data_transfer_to = array(
-						'savings_transfer_mutation_id'			=> $savings_transfer_mutation_id,
-						'savings_account_id'					=> $data['savings_account_id'],
-						'savings_id'							=> $data_savings['savings_id'],
-						'member_id'								=> $data_savings['member_id'],
-						'branch_id'								=> $auth['branch_id'],
-						'mutation_id'							=> 10,
-						'savings_account_opening_balance'		=> $data_savings['savings_account_opening_balance'],
-						'savings_transfer_mutation_to_amount'	=> $total_amount + $interest_amount,
-						'savings_account_last_balance'			=> $data_savings['savings_account_last_balance'],
-						'savings_transfer_mutation_to_token'	=> $data['deposito_account_closed_token'] . $savings_transfer_mutation_id,
-					);
-
-					if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutationTo($data_transfer_to)) {
-						$transaction_module_code = "PDEP";
-
-						$transaction_module_id 		= $this->AcctDepositoAccount_model->getTransactionModuleID($transaction_module_code);
-						$acctdepositoaccount_last 	= $this->AcctDepositoAccount_model->getAcctDepositoAccount_Detail($data['deposito_account_id']);
-
-
-						$journal_voucher_period = date("Ym", strtotime($data['deposito_account_closed_date']));
-
-						$data_journal = array(
-							'branch_id'						=> $auth['branch_id'],
-							'journal_voucher_period' 		=> $journal_voucher_period,
-							'journal_voucher_date'			=> date('Y-m-d'),
-							'journal_voucher_title'			=> 'PENUTUPAN SIMP BERJANGKA ' . $acctdepositoaccount_last['member_name'],
-							'journal_voucher_description'	=> 'PENUTUPAN SIMP BERJANGKA ' . $acctdepositoaccount_last['member_name'],
-							'transaction_module_id'			=> $transaction_module_id,
-							'transaction_module_code'		=> $transaction_module_code,
-							'transaction_journal_id' 		=> $acctdepositoaccount_last['deposito_account_id'],
-							'transaction_journal_no' 		=> $acctdepositoaccount_last['deposito_account_no'],
-							'journal_voucher_token' 		=> $data['deposito_account_closed_token'],
-							'created_id' 					=> $auth['user_id'],
-							'created_on' 					=> date('Y-m-d H:i:s'),
-						);
-
-						$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
-
-						$journal_voucher_id = $this->AcctDepositoAccount_model->getJournalVoucherID($data_journal['created_id']);
-
-						$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
-
-						$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
-
-						$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
-						//Simpanan Berjangka
-						$data_debit = array(
-							'journal_voucher_id'			=> $journal_voucher_id,
-							'account_id'					=> $account_id,
-							'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
-							'journal_voucher_amount'		=> ABS($total_amount),
-							'journal_voucher_debit_amount'	=> ABS($total_amount),
-							'journal_voucher_item_token' 	=> $data['deposito_account_closed_token'] . $account_id,
-							'account_id_status'				=> 0,
-							'created_id' 					=> $auth['user_id'],
-						);
-
-						$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debit);
-
-						$account_id = $this->AcctDepositoAccount_model->getAccountSavingsID($data_savings['savings_id']);
-
-						$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
-						//Masuk ke Rekening Tabungan
-						$data_credit = array(
-							'journal_voucher_id'			=> $journal_voucher_id,
-							'account_id'					=> $account_id,
-							'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
-							'journal_voucher_amount'		=> ABS($total_amount),
-							'journal_voucher_credit_amount'	=> ABS($total_amount),
-							'account_id_default_status'		=> $account_id_default_status,
-							'journal_voucher_item_token' 	=> $data['deposito_account_closed_token'] . $account_id,
-							'account_id_status'				=> 1,
-							'created_id' 					=> $auth['user_id'],
-						);
-						$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-
-						if ($tax_amount > 0) {
-
-							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_savings_tax_id']);
-
-							$data_debet = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $preferencecompany['account_savings_tax_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $tax_amount,
-								'journal_voucher_debit_amount'	=> $tax_amount,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 0,
-								'journal_voucher_item_token'	=> 'PJ1' . $data['deposito_account_closed_token'] . $tax_amount,
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-
-							$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
-
-							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
-							$data_credit = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $account_id,
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $tax_amount,
-								'journal_voucher_credit_amount'	=> $tax_amount,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 1,
-								'journal_voucher_item_token'	=> 'PJ2' . $data['deposito_account_closed_token'] . $account_id,
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-						}
-
-						if ($interest_amount > 0) {
-							$account_basil_id 	= $this->AcctDepositoProfitSharingCheck_model->getAccountBasilID($acctdepositoaccount_last['deposito_id']);
-
-							$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_basil_id);
-
-							$data_debet = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $account_basil_id,
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $interest_amount,
-								'journal_voucher_debit_amount'	=> $interest_amount,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 0,
-								'journal_voucher_item_token'	=> 'PJ1' . $data['deposito_account_closed_token'] . $interest_amount,
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-
-							$account_id = $this->AcctDepositoProfitSharingCheck_model->getAccountID($data_savings['savings_id']);
-
-							$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_id);
-
-							$data_credit = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $account_id,
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $interest_amount,
-								'journal_voucher_credit_amount'	=> $interest_amount,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 1,
-								'journal_voucher_item_token'	=> 'PJ2' . $data['deposito_account_closed_token'] . $account_id,
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-						}
-
-						if ($amount_administration > 0) {
-							$data_debet = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $preferencecompany['account_cash_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $amount_administration,
-								'journal_voucher_debit_amount'	=> $amount_administration,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 0,
-								'journal_voucher_item_token'	=> 'STR1' . $data['deposito_account_closed_token'] . $amount_administration,
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-
-							$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
-
-							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_mutation_adm_id']);
-
-							$data_credit = array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $preferencecompany['account_mutation_adm_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $amount_administration,
-								'journal_voucher_credit_amount'	=> $amount_administration,
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 1,
-								'journal_voucher_item_token'	=> 'STR2' . $data['deposito_account_closed_token'] . $preferencecompany['account_mutation_adm_id'],
-								'created_id' 					=> $auth['user_id']
-							);
-
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-						}
-						//penalty
-						if($data['deposito_account_penalty'] > 0){
-							$data_debet = array (
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $preferencecompany['account_cash_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $data['deposito_account_penalty'],
-								'journal_voucher_debit_amount'	=> $data['deposito_account_penalty'],
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 0,
-								'journal_voucher_item_token'	=> 'STRP1'.$data['deposito_account_closed_token'].$data['deposito_account_penalty'],
-								'created_id' 					=> $auth['user_id']
-							);
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-
-							$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
-
-							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_penalty_id']);
-
-							$data_credit =array(
-								'journal_voucher_id'			=> $journal_voucher_id,
-								'account_id'					=> $preferencecompany['account_penalty_id'],
-								'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
-								'journal_voucher_amount'		=> $data['deposito_account_penalty'],
-								'journal_voucher_credit_amount'	=> $data['deposito_account_penalty'],
-								'account_id_default_status'		=> $account_id_default_status,
-								'account_id_status'				=> 1,
-								'journal_voucher_item_token'	=> 'STRP2'.$data['deposito_account_closed_token'].$preferencecompany['account_penalty_id'],
-								'created_id' 					=> $auth['user_id']
-							);
-							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-						}
-					}
-				}
-				$auth = $this->session->userdata('auth');
-				$msg = "<div class='alert alert-success alert-dismissable'>  
-						<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
-							Penutupan Simpanan Berjangka Sukses
-						</div> ";
-				$sesi = $this->session->userdata('unique');
-				$this->session->unset_userdata('addacctdepositoaccount-' . $sesi['unique']);
-				$this->session->unset_userdata('acctdepositoaccounttoken-' . $sesi['unique']);
-				$this->session->set_userdata('message', $msg);
-				redirect('deposito-account/print-validation-closed/' . $data['deposito_account_id']);
-			} else {
-				$this->session->set_userdata('addacctdepositoaccount', $data);
-				$msg = "<div class='alert alert-danger alert-dismissable'>
-						<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
-							Penutupan Simpanan Berjangka Tidak Berhasil
-						</div> ";
-				$this->session->set_userdata('message', $msg);
-				redirect('deposito-account/get-closed');
-			}
-		} else {
-			$data_transfer = array(
-				'branch_id'							=> $auth['branch_id'],
-				'savings_transfer_mutation_date'	=> date('Y-m-d'),
-				'savings_transfer_mutation_amount'	=> $total_amount + $interest_amount,
-				'operated_name'						=> 'SYS',
-				'savings_transfer_mutation_token'	=> $data['deposito_account_closed_token'],
-				'created_id'						=> $auth['user_id'],
-				'created_on'						=> date('Y-m-d H:i:s'),
+		if(empty($savingsaccountid) or $savingsaccountid = 0){
+			$auth = $this->session->userdata('auth');
+			$msg = "<div class='alert alert-danger alert-dismissable'>  
+					<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+						Penutupan Simpanan Gagal Rek. simpanan Harus di isi
+					</div> ";
+			$sesi = $this->session->userdata('unique');
+			$this->session->unset_userdata('addacctdepositoaccount-' . $sesi['unique']);
+			$this->session->unset_userdata('acctdepositoaccounttoken-' . $sesi['unique']);
+			$this->session->set_userdata('message', $msg);
+			redirect('deposito-account/add-closed/' . $data['deposito_account_id']);
+		}else{
+	
+			$this->form_validation->set_rules('savings_account_id', 'Simpanan Anggota harus di isi', 'required');
+	
+			$amount_administration =  $this->input->post('deposito_account_amount_adm', true);
+	
+			$data_savings = array(
+				'savings_id'						=> $this->input->post('savings_id', true),
+				'member_id'							=> $this->input->post('member_id_savings', true),
+				'savings_account_opening_balance'	=> $this->input->post('savings_account_last_balance', true),
+				'savings_account_last_balance'		=> $this->input->post('savings_account_last_balance', true) + $this->input->post('deposito_account_amount', true),
 			);
-
-			$savings_transfer_mutation_token 		= $this->AcctDepositoAccount_model->getAcctSavingsTransferMutationToken($data_transfer['savings_transfer_mutation_token']);
-
-			if ($savings_transfer_mutation_token->num_rows() == 0) {
-				if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_transfer)) {
-					$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_transfer['created_on']);
-
-					$data_transfer_to = array(
-						'savings_transfer_mutation_id'			=> $savings_transfer_mutation_id,
-						'savings_account_id'					=> $data['savings_account_id'],
-						'savings_id'							=> $data_savings['savings_id'],
-						'member_id'								=> $data_savings['member_id'],
-						'branch_id'								=> $auth['branch_id'],
-						'mutation_id'							=> 10,
-						'savings_account_opening_balance'		=> $data_savings['savings_account_opening_balance'],
-						'savings_transfer_mutation_to_amount'	=> $total_amount + $interest_amount,
-						'savings_account_last_balance'			=> $data_savings['savings_account_last_balance'],
-						'savings_transfer_mutation_to_token'	=> $data['deposito_account_closed_token'] . $savings_transfer_mutation_id,
+	
+			$acctdepositoaccount 		   = $this->AcctDepositoAccount_model->getAcctDepositoAccountDetail($data['deposito_account_id']);
+			$interest_amount		 	   = $this->input->post('interest_amount', true);
+			$tax_amount					   = $this->input->post('tax_amount', true);
+			$total_amount				   = $this->input->post('deposito_account_amount', true);
+	
+			$deposito_account_closed_token = $this->AcctDepositoAccount_model->getDepositoAccountClosedToken($data['deposito_account_closed_token']);
+			
+			if ($this->form_validation->run() == true) {
+			if ($deposito_account_closed_token->num_rows() == 0) {
+				if ($this->AcctDepositoAccount_model->closedAcctDepositoAccountExtra($data)) {
+					$data_transfer = array(
+						'branch_id'							=> $auth['branch_id'],
+						'savings_transfer_mutation_date'	=> date('Y-m-d'),
+						'savings_transfer_mutation_amount'	=> $total_amount + $interest_amount,
+						'operated_name'						=> 'SYS',
+						'savings_transfer_mutation_token'	=> $data['deposito_account_closed_token'],
+						'created_id'						=> $auth['user_id'],
+						'created_on'						=> date('Y-m-d H:i:s'),
 					);
-
-					$savings_transfer_mutation_to_token 			= $this->AcctDepositoAccount_model->getAcctSavingsTransferMutationToToken($data_transfer_to['savings_transfer_mutation_to_token']);
-
-					if ($savings_transfer_mutation_to_token->num_rows() == 0) {
+	
+					if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_transfer)) {
+						$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_transfer['created_on']);
+	
+						$data_transfer_to = array(
+							'savings_transfer_mutation_id'			=> $savings_transfer_mutation_id,
+							'savings_account_id'					=> $data['savings_account_id'],
+							'savings_id'							=> $data_savings['savings_id'],
+							'member_id'								=> $data_savings['member_id'],
+							'branch_id'								=> $auth['branch_id'],
+							'mutation_id'							=> 10,
+							'savings_account_opening_balance'		=> $data_savings['savings_account_opening_balance'],
+							'savings_transfer_mutation_to_amount'	=> $total_amount + $interest_amount,
+							'savings_account_last_balance'			=> $data_savings['savings_account_last_balance'],
+							'savings_transfer_mutation_to_token'	=> $data['deposito_account_closed_token'] . $savings_transfer_mutation_id,
+						);
+	
 						if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutationTo($data_transfer_to)) {
 							$transaction_module_code = "PDEP";
-
+	
 							$transaction_module_id 		= $this->AcctDepositoAccount_model->getTransactionModuleID($transaction_module_code);
 							$acctdepositoaccount_last 	= $this->AcctDepositoAccount_model->getAcctDepositoAccount_Detail($data['deposito_account_id']);
-
-
+	
+	
 							$journal_voucher_period = date("Ym", strtotime($data['deposito_account_closed_date']));
-
+	
 							$data_journal = array(
 								'branch_id'						=> $auth['branch_id'],
 								'journal_voucher_period' 		=> $journal_voucher_period,
@@ -2752,22 +2513,17 @@ class AcctDepositoAccount extends CI_Controller{
 								'created_id' 					=> $auth['user_id'],
 								'created_on' 					=> date('Y-m-d H:i:s'),
 							);
-
-
-							$journal_voucher_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherToken($data_journal['journal_voucher_token']);
-
-							if ($journal_voucher_token->num_rows() == 0) {
-								$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
-							}
-
+	
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
+	
 							$journal_voucher_id = $this->AcctDepositoAccount_model->getJournalVoucherID($data_journal['created_id']);
-
+	
 							$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
-
+	
 							$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
-
+	
 							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
+	
 							//Simpanan Berjangka
 							$data_debit = array(
 								'journal_voucher_id'			=> $journal_voucher_id,
@@ -2779,18 +2535,13 @@ class AcctDepositoAccount extends CI_Controller{
 								'account_id_status'				=> 0,
 								'created_id' 					=> $auth['user_id'],
 							);
-
-
-							$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debit['journal_voucher_item_token']);
-
-							if ($journal_voucher_item_token->num_rows() == 0) {
-								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debit);
-							}
-
+	
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debit);
+	
 							$account_id = $this->AcctDepositoAccount_model->getAccountSavingsID($data_savings['savings_id']);
-
+	
 							$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
+	
 							//Masuk ke Rekening Tabungan
 							$data_credit = array(
 								'journal_voucher_id'			=> $journal_voucher_id,
@@ -2803,17 +2554,12 @@ class AcctDepositoAccount extends CI_Controller{
 								'account_id_status'				=> 1,
 								'created_id' 					=> $auth['user_id'],
 							);
-
-							$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
-
-							if ($journal_voucher_item_token->num_rows() == 0) {
-								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-							}
-
+							$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+	
 							if ($tax_amount > 0) {
-
+	
 								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_savings_tax_id']);
-
+	
 								$data_debet = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $preferencecompany['account_savings_tax_id'],
@@ -2825,17 +2571,13 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_item_token'	=> 'PJ1' . $data['deposito_account_closed_token'] . $tax_amount,
 									'created_id' 					=> $auth['user_id']
 								);
-
-								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
-
-								if ($journal_voucher_item_token->num_rows() == 0) {
-									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-								}
-
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+	
 								$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
-
+	
 								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
-
+	
 								$data_credit = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $account_id,
@@ -2847,19 +2589,15 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_item_token'	=> 'PJ2' . $data['deposito_account_closed_token'] . $account_id,
 									'created_id' 					=> $auth['user_id']
 								);
-
-								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
-
-								if ($journal_voucher_item_token->num_rows() == 0) {
-									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-								}
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
 							}
-
+	
 							if ($interest_amount > 0) {
 								$account_basil_id 	= $this->AcctDepositoProfitSharingCheck_model->getAccountBasilID($acctdepositoaccount_last['deposito_id']);
-
+	
 								$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_basil_id);
-
+	
 								$data_debet = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $account_basil_id,
@@ -2868,20 +2606,16 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_debit_amount'	=> $interest_amount,
 									'account_id_default_status'		=> $account_id_default_status,
 									'account_id_status'				=> 0,
-									'journal_voucher_item_token'	=> 'ITR1' . $data['deposito_account_closed_token'] . $interest_amount,
+									'journal_voucher_item_token'	=> 'PJ1' . $data['deposito_account_closed_token'] . $interest_amount,
 									'created_id' 					=> $auth['user_id']
 								);
-
-								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
-
-								if ($journal_voucher_item_token->num_rows() == 0) {
-									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-								}
-
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+	
 								$account_id = $this->AcctDepositoProfitSharingCheck_model->getAccountID($data_savings['savings_id']);
-
+	
 								$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_id);
-
+	
 								$data_credit = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $account_id,
@@ -2890,17 +2624,13 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_credit_amount'	=> $interest_amount,
 									'account_id_default_status'		=> $account_id_default_status,
 									'account_id_status'				=> 1,
-									'journal_voucher_item_token'	=> 'ITR2' . $data['deposito_account_closed_token'] . $account_id,
+									'journal_voucher_item_token'	=> 'PJ2' . $data['deposito_account_closed_token'] . $account_id,
 									'created_id' 					=> $auth['user_id']
 								);
-
-								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
-
-								if ($journal_voucher_item_token->num_rows() == 0) {
-									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
-								}
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
 							}
-
+	
 							if ($amount_administration > 0) {
 								$data_debet = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
@@ -2913,17 +2643,13 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_item_token'	=> 'STR1' . $data['deposito_account_closed_token'] . $amount_administration,
 									'created_id' 					=> $auth['user_id']
 								);
-
-								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
-
-								if ($journal_voucher_item_token->num_rows() == 0) {
-									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
-								}
-
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+	
 								$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
-
+	
 								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_mutation_adm_id']);
-
+	
 								$data_credit = array(
 									'journal_voucher_id'			=> $journal_voucher_id,
 									'account_id'					=> $preferencecompany['account_mutation_adm_id'],
@@ -2935,28 +2661,337 @@ class AcctDepositoAccount extends CI_Controller{
 									'journal_voucher_item_token'	=> 'STR2' . $data['deposito_account_closed_token'] . $preferencecompany['account_mutation_adm_id'],
 									'created_id' 					=> $auth['user_id']
 								);
-
+	
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+							}
+							//penalty
+							if($data['deposito_account_penalty'] > 0){
+								$data_debet = array (
+									'journal_voucher_id'			=> $journal_voucher_id,
+									'account_id'					=> $preferencecompany['account_cash_id'],
+									'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+									'journal_voucher_amount'		=> $data['deposito_account_penalty'],
+									'journal_voucher_debit_amount'	=> $data['deposito_account_penalty'],
+									'account_id_default_status'		=> $account_id_default_status,
+									'account_id_status'				=> 0,
+									'journal_voucher_item_token'	=> 'STRP1'.$data['deposito_account_closed_token'].$data['deposito_account_penalty'],
+									'created_id' 					=> $auth['user_id']
+								);
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+	
+								$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
+	
+								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_penalty_id']);
+	
+								$data_credit =array(
+									'journal_voucher_id'			=> $journal_voucher_id,
+									'account_id'					=> $preferencecompany['account_penalty_id'],
+									'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+									'journal_voucher_amount'		=> $data['deposito_account_penalty'],
+									'journal_voucher_credit_amount'	=> $data['deposito_account_penalty'],
+									'account_id_default_status'		=> $account_id_default_status,
+									'account_id_status'				=> 1,
+									'journal_voucher_item_token'	=> 'STRP2'.$data['deposito_account_closed_token'].$preferencecompany['account_penalty_id'],
+									'created_id' 					=> $auth['user_id']
+								);
+								$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+							}
+						}
+					}
+					$auth = $this->session->userdata('auth');
+					$msg = "<div class='alert alert-success alert-dismissable'>  
+							<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+								Penutupan Simpanan Berjangka Sukses
+							</div> ";
+					$sesi = $this->session->userdata('unique');
+					$this->session->unset_userdata('addacctdepositoaccount-' . $sesi['unique']);
+					$this->session->unset_userdata('acctdepositoaccounttoken-' . $sesi['unique']);
+					$this->session->set_userdata('message', $msg);
+					redirect('deposito-account/print-validation-closed/' . $data['deposito_account_id']);
+				} else {
+					$this->session->set_userdata('addacctdepositoaccount', $data);
+					$msg = "<div class='alert alert-danger alert-dismissable'>
+							<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+								Penutupan Simpanan Berjangka Tidak Berhasil
+							</div> ";
+					$this->session->set_userdata('message', $msg);
+					redirect('deposito-account/get-closed');
+				}
+			}
+		}
+		
+		else {
+				$data_transfer = array(
+					'branch_id'							=> $auth['branch_id'],
+					'savings_transfer_mutation_date'	=> date('Y-m-d'),
+					'savings_transfer_mutation_amount'	=> $total_amount + $interest_amount,
+					'operated_name'						=> 'SYS',
+					'savings_transfer_mutation_token'	=> $data['deposito_account_closed_token'],
+					'created_id'						=> $auth['user_id'],
+					'created_on'						=> date('Y-m-d H:i:s'),
+				);
+	
+				$savings_transfer_mutation_token 		= $this->AcctDepositoAccount_model->getAcctSavingsTransferMutationToken($data_transfer['savings_transfer_mutation_token']);
+				if ($this->form_validation->run() == true) {
+	
+				if ($savings_transfer_mutation_token->num_rows() == 0) {
+					if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutation($data_transfer)) {
+						$savings_transfer_mutation_id = $this->AcctSavingsTransferMutation_model->getSavingsTransferMutationID($data_transfer['created_on']);
+	
+						$data_transfer_to = array(
+							'savings_transfer_mutation_id'			=> $savings_transfer_mutation_id,
+							'savings_account_id'					=> $data['savings_account_id'],
+							'savings_id'							=> $data_savings['savings_id'],
+							'member_id'								=> $data_savings['member_id'],
+							'branch_id'								=> $auth['branch_id'],
+							'mutation_id'							=> 10,
+							'savings_account_opening_balance'		=> $data_savings['savings_account_opening_balance'],
+							'savings_transfer_mutation_to_amount'	=> $total_amount + $interest_amount,
+							'savings_account_last_balance'			=> $data_savings['savings_account_last_balance'],
+							'savings_transfer_mutation_to_token'	=> $data['deposito_account_closed_token'] . $savings_transfer_mutation_id,
+						);
+	
+						$savings_transfer_mutation_to_token 			= $this->AcctDepositoAccount_model->getAcctSavingsTransferMutationToToken($data_transfer_to['savings_transfer_mutation_to_token']);
+	
+						if ($savings_transfer_mutation_to_token->num_rows() == 0) {
+							if ($this->AcctSavingsTransferMutation_model->insertAcctSavingsTransferMutationTo($data_transfer_to)) {
+								$transaction_module_code = "PDEP";
+	
+								$transaction_module_id 		= $this->AcctDepositoAccount_model->getTransactionModuleID($transaction_module_code);
+								$acctdepositoaccount_last 	= $this->AcctDepositoAccount_model->getAcctDepositoAccount_Detail($data['deposito_account_id']);
+	
+	
+								$journal_voucher_period = date("Ym", strtotime($data['deposito_account_closed_date']));
+	
+								$data_journal = array(
+									'branch_id'						=> $auth['branch_id'],
+									'journal_voucher_period' 		=> $journal_voucher_period,
+									'journal_voucher_date'			=> date('Y-m-d'),
+									'journal_voucher_title'			=> 'PENUTUPAN SIMP BERJANGKA ' . $acctdepositoaccount_last['member_name'],
+									'journal_voucher_description'	=> 'PENUTUPAN SIMP BERJANGKA ' . $acctdepositoaccount_last['member_name'],
+									'transaction_module_id'			=> $transaction_module_id,
+									'transaction_module_code'		=> $transaction_module_code,
+									'transaction_journal_id' 		=> $acctdepositoaccount_last['deposito_account_id'],
+									'transaction_journal_no' 		=> $acctdepositoaccount_last['deposito_account_no'],
+									'journal_voucher_token' 		=> $data['deposito_account_closed_token'],
+									'created_id' 					=> $auth['user_id'],
+									'created_on' 					=> date('Y-m-d H:i:s'),
+								);
+	
+	
+								$journal_voucher_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherToken($data_journal['journal_voucher_token']);
+	
+								if ($journal_voucher_token->num_rows() == 0) {
+									$this->AcctDepositoAccount_model->insertAcctJournalVoucher($data_journal);
+								}
+	
+								$journal_voucher_id = $this->AcctDepositoAccount_model->getJournalVoucherID($data_journal['created_id']);
+	
+								$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
+	
+								$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
+	
+								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+	
+								//Simpanan Berjangka
+								$data_debit = array(
+									'journal_voucher_id'			=> $journal_voucher_id,
+									'account_id'					=> $account_id,
+									'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
+									'journal_voucher_amount'		=> ABS($total_amount),
+									'journal_voucher_debit_amount'	=> ABS($total_amount),
+									'journal_voucher_item_token' 	=> $data['deposito_account_closed_token'] . $account_id,
+									'account_id_status'				=> 0,
+									'created_id' 					=> $auth['user_id'],
+								);
+	
+	
+								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debit['journal_voucher_item_token']);
+	
+								if ($journal_voucher_item_token->num_rows() == 0) {
+									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debit);
+								}
+	
+								$account_id = $this->AcctDepositoAccount_model->getAccountSavingsID($data_savings['savings_id']);
+	
+								$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+	
+								//Masuk ke Rekening Tabungan
+								$data_credit = array(
+									'journal_voucher_id'			=> $journal_voucher_id,
+									'account_id'					=> $account_id,
+									'journal_voucher_description'	=> $data_journal['journal_voucher_description'],
+									'journal_voucher_amount'		=> ABS($total_amount),
+									'journal_voucher_credit_amount'	=> ABS($total_amount),
+									'account_id_default_status'		=> $account_id_default_status,
+									'journal_voucher_item_token' 	=> $data['deposito_account_closed_token'] . $account_id,
+									'account_id_status'				=> 1,
+									'created_id' 					=> $auth['user_id'],
+								);
+	
 								$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
-
+	
 								if ($journal_voucher_item_token->num_rows() == 0) {
 									$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+								}
+	
+								if ($tax_amount > 0) {
+	
+									$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_savings_tax_id']);
+	
+									$data_debet = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $preferencecompany['account_savings_tax_id'],
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $tax_amount,
+										'journal_voucher_debit_amount'	=> $tax_amount,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 0,
+										'journal_voucher_item_token'	=> 'PJ1' . $data['deposito_account_closed_token'] . $tax_amount,
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+									}
+	
+									$account_id = $this->AcctDepositoAccount_model->getAccountID($acctdepositoaccount_last['deposito_id']);
+	
+									$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($account_id);
+	
+									$data_credit = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $account_id,
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $tax_amount,
+										'journal_voucher_credit_amount'	=> $tax_amount,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 1,
+										'journal_voucher_item_token'	=> 'PJ2' . $data['deposito_account_closed_token'] . $account_id,
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+									}
+								}
+	
+								if ($interest_amount > 0) {
+									$account_basil_id 	= $this->AcctDepositoProfitSharingCheck_model->getAccountBasilID($acctdepositoaccount_last['deposito_id']);
+	
+									$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_basil_id);
+	
+									$data_debet = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $account_basil_id,
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $interest_amount,
+										'journal_voucher_debit_amount'	=> $interest_amount,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 0,
+										'journal_voucher_item_token'	=> 'ITR1' . $data['deposito_account_closed_token'] . $interest_amount,
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+									}
+	
+									$account_id = $this->AcctDepositoProfitSharingCheck_model->getAccountID($data_savings['savings_id']);
+	
+									$account_id_default_status = $this->AcctDepositoProfitSharingCheck_model->getAccountIDDefaultStatus($account_id);
+	
+									$data_credit = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $account_id,
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $interest_amount,
+										'journal_voucher_credit_amount'	=> $interest_amount,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 1,
+										'journal_voucher_item_token'	=> 'ITR2' . $data['deposito_account_closed_token'] . $account_id,
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+									}
+								}
+	
+								if ($amount_administration > 0) {
+									$data_debet = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $preferencecompany['account_cash_id'],
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $amount_administration,
+										'journal_voucher_debit_amount'	=> $amount_administration,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 0,
+										'journal_voucher_item_token'	=> 'STR1' . $data['deposito_account_closed_token'] . $amount_administration,
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_debet['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_debet);
+									}
+	
+									$preferencecompany = $this->AcctDepositoAccount_model->getPreferenceCompany();
+	
+									$account_id_default_status = $this->AcctDepositoAccount_model->getAccountIDDefaultStatus($preferencecompany['account_mutation_adm_id']);
+	
+									$data_credit = array(
+										'journal_voucher_id'			=> $journal_voucher_id,
+										'account_id'					=> $preferencecompany['account_mutation_adm_id'],
+										'journal_voucher_description'	=> $data_journal['journal_voucher_title'],
+										'journal_voucher_amount'		=> $amount_administration,
+										'journal_voucher_credit_amount'	=> $amount_administration,
+										'account_id_default_status'		=> $account_id_default_status,
+										'account_id_status'				=> 1,
+										'journal_voucher_item_token'	=> 'STR2' . $data['deposito_account_closed_token'] . $preferencecompany['account_mutation_adm_id'],
+										'created_id' 					=> $auth['user_id']
+									);
+	
+									$journal_voucher_item_token 	= $this->AcctDepositoAccount_model->getAcctJournalVoucherItemToken($data_credit['journal_voucher_item_token']);
+	
+									if ($journal_voucher_item_token->num_rows() == 0) {
+										$this->AcctDepositoAccount_model->insertAcctJournalVoucherItem($data_credit);
+									}
 								}
 							}
 						}
 					}
 				}
 			}
-			$auth = $this->session->userdata('auth');
-			$msg = "<div class='alert alert-success alert-dismissable'>  
-					<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
-						Penutupan Simpanan Berjangka Sukses
-					</div> ";
-			$sesi = $this->session->userdata('unique');
-			$this->session->unset_userdata('addacctdepositoaccount-' . $sesi['unique']);
-			$this->session->unset_userdata('acctdepositoaccounttoken-' . $sesi['unique']);
-			$this->session->set_userdata('message', $msg);
-			redirect('deposito-account/print-validation-closed/' . $data['deposito_account_id']);
+				$auth = $this->session->userdata('auth');
+				$msg = "<div class='alert alert-success alert-dismissable'>  
+						<button type='button' class='close' data-dismiss='alert' aria-hidden='true'></button>					
+							Penutupan Simpanan Berjangka Sukses
+						</div> ";
+				$sesi = $this->session->userdata('unique');
+				$this->session->unset_userdata('addacctdepositoaccount-' . $sesi['unique']);
+				$this->session->unset_userdata('acctdepositoaccounttoken-' . $sesi['unique']);
+				$this->session->set_userdata('message', $msg);
+				redirect('deposito-account/print-validation-closed/' . $data['deposito_account_id']);
+			}
+
+
+
+
+
 		}
+
+
+		
 	}
 
 	public function printValidationClosedAcctDepositoAccount(){
